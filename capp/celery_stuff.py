@@ -1,4 +1,4 @@
-# <pre>
+# 
 import sys, os
 sys.path.append(os.path.abspath('./')) # == sys.path.append(os.path.abspath('/home/w3p/set1/py4web'))
 
@@ -30,7 +30,7 @@ def serve_a_beer(_type, size):
     """
     print('Serving {} of {} beer!'.format(size, _type))
     sleep(3)
-    print("""<pre>
+    print("""
           ------------------------------------------------
                    .   *   ..  . *  *
                  *  * @()Ooc()*   o  .
@@ -46,7 +46,7 @@ def serve_a_beer(_type, size):
                     |\_|__|__|_/|
                      \_________/
           ------------------------------------------------
-          </pre>""")
+          """)
 
 @app.task
 def serve_a_coffee(_type, size):
@@ -56,7 +56,7 @@ def serve_a_coffee(_type, size):
     """
     print('Serving a {} {} coffee!'.format(size, _type))
     sleep(1)
-    print("""<pre>
+    print("""
           ---------------------------------
                           )  (
                          (   ) )
@@ -68,24 +68,20 @@ def serve_a_coffee(_type, size):
                        '_________'
                         '-------'
           ---------------------------------
-          </pre>""")
+          """)
 
 
 @app.task
-def read_db(_type, size):
-    some_id = 1
-    tbl = 'test_table'
-    print('Serving a {} {} !'.format(size, _type))
+def read_db(some_id='1', tbl='test_table'):
+    some_id = int(some_id)
+    print('Serving a id={}, table={} !'.format(some_id, tbl))
     try:
         # this task will be executed in its own thread, connect to db
         db._adapter.reconnect()
-        qu= db[tbl].id == some_id
-        #qu= db.test_table.id == some_id
-        rows = db(qu).select()
-        for r in rows:
-            print (r)
+        r =  db( db[tbl].id == some_id ).select().first()
+        print (r)
+        res= [ f"{k}={v}" for k, v in r.items()  if not k in ( 'update_record', 'delete_record' ) ]
+        print ( ', '.join(res))
     except:
-        print ('------------------------error in read_db')
+        print (f'!!! error in read_db, id={some_id}, table={tbl}')
 
-
-# </pre>

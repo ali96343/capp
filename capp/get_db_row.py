@@ -9,7 +9,7 @@ def start_read_db():
     """ Starts the execution of a celery task with the delay method.
     the delay method doesn't wait the task execution be finished.
     """
-    xxx=read_db.apply_async( ( 'id=1', 'test_table' ) )
+    xxx=read_db.apply_async( ( '1', 'test_table' ) )
     print( f'task_id {xxx} will be executed before the read_db task be finished')
 
 

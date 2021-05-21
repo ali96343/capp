@@ -23,5 +23,5 @@ if res:
    res_res = AsyncResult( res.id   ,app=app)
 
    print(res_res.state) # 'SUCCESS'
-   print(res_res.get()) # 7
+   print(res_res.get()) # 7 res_res.result
 

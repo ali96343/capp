@@ -31,10 +31,8 @@ def index():
         else f"Hello, anonymous! its {APP_NAME}"
     )
     APPS = "apps"
-    cwd = os.getcwd()
-    p4w = cwd.split("/")[-1]
-    if any ( [p4w != "py4web", APP_NAME != 'capp', not os.path.isdir('apps/capp')  ]):
-        menu = DIV(P("errors in setup"))
+    if not os.path.isdir('../py4web/apps/capp'):
+        menu = DIV(P("errors in setup: bad APP_NAME, apps-dir ..."))
         return locals()
 
     menu = DIV(
@@ -79,7 +77,7 @@ def index():
                 _role="button",
                 _href=URL(
                     "command_server",
-                    vars=dict(cmd=f"cat apps/{APP_NAME}/celery_stuff.py"),
+                    vars=dict(cmd=f"cat {APPS}/{APP_NAME}/celery_stuff.py"),
                 ),
             )
         ),
@@ -88,14 +86,14 @@ def index():
                 "get beer id",
                 _role="button",
                 _href=URL(
-                    "command_server", vars=dict(cmd="python3  apps/capp/get_beer.py")
+                    "command_server", vars=dict(cmd=f"python3  {APPS}/{APP_NAME}/get_beer.py")
                 ),
             ),
             A(
                 "get beer_res",
                 _role="button",
                 _href=URL(
-                    "command_server", vars=dict(cmd="python3  apps/capp/get_beer_res.py")
+                    "command_server", vars=dict(cmd=f"python3  {APPS}/{APP_NAME}/get_beer_res.py")
                 ),
             )
         ),
@@ -104,14 +102,14 @@ def index():
                 "get coffee id",
                 _role="button",
                 _href=URL(
-                    "command_server", vars=dict(cmd="python3  apps/capp/get_coffee.py")
+                    "command_server", vars=dict(cmd=f"python3  {APPS}/{APP_NAME}/get_coffee.py")
                 ),
             ),
             A(
                 "get coffee_res",
                 _role="button",
                 _href=URL(
-                    "command_server", vars=dict(cmd="python3  apps/capp/get_coffee_res.py")
+                    "command_server", vars=dict(cmd=f"python3  {APPS}/{APP_NAME}/get_coffee_res.py")
                 ),
             )
         ),
@@ -120,14 +118,14 @@ def index():
                 "get read_db id",
                 _role="button",
                 _href=URL(
-                    "command_server", vars=dict(cmd="python3  apps/capp/get_db_row.py")
+                    "command_server", vars=dict(cmd=f"python3  {APPS}/{APP_NAME}/get_db_row.py")
                 ),
             ),
             A(
                 "get read_db_res",
                 _role="button",
                 _href=URL(
-                    "command_server", vars=dict(cmd="python3  apps/capp/get_db_row_res.py")
+                    "command_server", vars=dict(cmd=f"python3  {APPS}/{APP_NAME}/get_db_row_res.py")
                 ),
             )
         ),
@@ -148,7 +146,7 @@ def command_server():
 
     cmd_d = dict(request.query)
     cmd = cmd_d.get("cmd", "ls")
-    res = run_command(cmd).replace(b"\n", b"<br>")
+    res = b'<pre>' + run_command(cmd).replace(b"\n", b"<br>") + b'</pre>'
     b_cmd = b"$ " + cmd.encode()  # b'some-mess'
 
-    return b_cmd + b"<br>" + res
+    return DIV( b_cmd + b"<br>" + res )

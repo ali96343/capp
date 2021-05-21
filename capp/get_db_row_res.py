@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath('./'))  # == sys.path.append(os.path.abspath('/h
 
 from apps.capp.celery_stuff import  read_db # Importing the task
 
-res = read_db( 'id=1', 'test_table' )
+res = read_db( '1', 'test_table' )
 #print ('res.status: ',res.status)
 #print ('res.id: ',res.id)
 
