@@ -18,7 +18,7 @@ import os, sys
 
 all_cmd = {
     "redis": "ps axw| grep redis-server| grep -v grep",
-    "c2": "ps axw| grep celery| grep -v grep",
+    "celery": "ps axw| grep celery| grep -v grep",
     "kill_cel":"for pid in $(ps -ef | awk '/celery/ {print $2}'); do kill -9 $pid; done",
 }
 
@@ -59,7 +59,7 @@ def index():
             A(
                 "check celery",
                 _role="button",
-                _href=URL("command_server", vars=dict(cmd=all_cmd["c2"])),
+                _href=URL("command_server", vars=dict(cmd=all_cmd["celery"])),
             ),
             A(
                 "run celery",
@@ -84,6 +84,24 @@ def index():
                 _href=URL(
                     "command_server",
                     vars=dict(cmd=f"cat {APPS}/{APP_NAME}/celery_stuff.py"),
+                ),
+            ),
+            A(
+                "cat first_app.py",
+                _role="button",
+                _href=URL(
+                    "command_server",
+                    vars=dict(cmd=f"cat {APPS}/{APP_NAME}/first_app.py"),
+                ),
+            ),
+        ),
+        DIV(
+            A(
+                "run first_app.py",
+                _role="button",
+                _href=URL(
+                    "command_server",
+                    vars=dict(cmd=f"python3 {APPS}/{APP_NAME}/first_app.py"),
                 ),
             )
         ),
@@ -155,4 +173,4 @@ def command_server():
     res = b'<pre>' + run_command(cmd).replace(b"\n", b"<br>") + b'</pre>'
     b_cmd = b"$ " + cmd.encode()  # b'some-mess'
 
-    return DIV( b_cmd + b"<br>" + res )
+    return DIV( b_cmd + b"<br>" + res, _style= "font-size:18px;" )

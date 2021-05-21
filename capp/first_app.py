@@ -3,7 +3,7 @@ import sys, os
 sys.path.append(os.path.abspath('./'))
 
 
-from apps.capp.celery_stuff import serve_a_beer, serve_a_coffee # Importing the task
+from apps.capp.celery_stuff import serve_a_beer, serve_a_coffee, read_db # Importing the task
 
 
 def start_serve_a_beer():
@@ -22,7 +22,16 @@ def start_serve_a_coffee():
     print('This will be executed before the serve_a_beer task be finished')
 
 
+def start_serve_a_db():
+    """ Starts the execution of a celery task with the delay method.
+    the delay method doesn't wait the task execution be finished.
+    """
+    read_db.apply_async(('1', 'test_table'))
+    print('This will be executed before the serve_a_beer task be finished')
+
+
+
 start_serve_a_beer()
 start_serve_a_coffee()
-
+start_serve_a_db()
 
