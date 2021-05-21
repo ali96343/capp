@@ -1,3 +1,4 @@
+# <pre>
 import sys, os
 sys.path.append(os.path.abspath('./')) # == sys.path.append(os.path.abspath('/home/w3p/set1/py4web'))
 
@@ -29,12 +30,12 @@ def serve_a_beer(_type, size):
     """
     print('Serving {} of {} beer!'.format(size, _type))
     sleep(3)
-    print("""
+    print("""<pre>
           ------------------------------------------------
                    .   *   ..  . *  *
                  *  * @()Ooc()*   o  .
                      (Q@*0CG*O()  ___
-                    |\_________/|/ _ \
+                    |\_________/|/ _ \\
                     |  |  |  |  | / | |
                     |  |  |  |  | | | |
                     |  |  |  |  | | | |
@@ -45,7 +46,7 @@ def serve_a_beer(_type, size):
                     |\_|__|__|_/|
                      \_________/
           ------------------------------------------------
-          """)
+          </pre>""")
 
 @app.task
 def serve_a_coffee(_type, size):
@@ -55,7 +56,7 @@ def serve_a_coffee(_type, size):
     """
     print('Serving a {} {} coffee!'.format(size, _type))
     sleep(1)
-    print("""
+    print("""<pre>
           ---------------------------------
                           )  (
                          (   ) )
@@ -67,7 +68,7 @@ def serve_a_coffee(_type, size):
                        '_________'
                         '-------'
           ---------------------------------
-          """)
+          </pre>""")
 
 
 @app.task
@@ -87,4 +88,4 @@ def read_db(_type, size):
         print ('------------------------error in read_db')
 
 
-
+# </pre>
