@@ -33,7 +33,7 @@ def index():
     APPS = "apps"
     cwd = os.getcwd()
     p4w = cwd.split("/")[-1]
-    if any ( [p4w != "py4web", APP_NAME != 'capp', os.path.isdir( 'py4web/apps/capp' )  ]):
+    if any ( [p4w != "py4web", APP_NAME != 'capp', not os.path.isdir('apps/capp')  ]):
         menu = DIV(P("errors in setup"))
         return locals()
 
