@@ -11,6 +11,7 @@ def start_serve_a_coffee():
     """
     xxx=serve_a_coffee.apply_async(('express', 'small'))
     print( f'task_id {xxx} will be executed before the serve_a_coffee task be finished')
+    print ('task_status: ',xxx.status)
 
 
 start_serve_a_coffee()

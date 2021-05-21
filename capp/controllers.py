@@ -17,8 +17,9 @@ from .settings import APP_NAME
 import os, sys
 
 all_cmd = {
-    "c1": "ps axw| grep redis| grep -v grep",
+    "redis": "ps axw| grep redis-server| grep -v grep",
     "c2": "ps axw| grep celery| grep -v grep",
+    "kill_cel":"for pid in $(ps -ef | awk '/celery/ {print $2}'); do kill -9 $pid; done",
 }
 
 
@@ -51,7 +52,7 @@ def index():
             A(
                 "check redis",
                 _role="button",
-                _href=URL("command_server", vars=dict(cmd=all_cmd["c1"])),
+                _href=URL("command_server", vars=dict(cmd=all_cmd["redis"])),
             )
         ),
         DIV(
@@ -61,14 +62,19 @@ def index():
                 _href=URL("command_server", vars=dict(cmd=all_cmd["c2"])),
             ),
             A(
-                "run celery queue",
+                "run celery",
                 _role="button",
                 _href=URL(
                     "command_server",
                     vars=dict(
-                        cmd="celery -A apps.capp.celery_stuff worker --loglevel=info --detach"
+                        cmd=f"celery -A {APPS}.{APP_NAME}.celery_stuff worker --loglevel=info --detach"
                     ),
                 ),
+            ),
+            A(
+                "kill celery",
+                _role="button",
+                _href=URL("command_server", vars=dict(cmd=all_cmd["kill_cel"])),
             ),
         ),
         DIV(
@@ -129,7 +135,7 @@ def index():
                 ),
             )
         ),
-    )
+    _style= "font-size:18px;")
 
     return locals()
 

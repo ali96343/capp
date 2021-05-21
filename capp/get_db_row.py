@@ -11,6 +11,7 @@ def start_read_db():
     """
     xxx=read_db.apply_async( ( '1', 'test_table' ) )
     print( f'task_id {xxx} will be executed before the read_db task be finished')
+    print ('task_status: ',xxx.status)
 
 
 start_read_db()
