@@ -14,7 +14,7 @@ app = Celery('first_app', broker='redis://localhost/2', backend= 'redis://localh
 app.control.purge()
 
 
-# celery -A celery_stuff.tasks worker -l debug -Q beer,coffee, pydal
+# celery -A apps.capp.celery_stuff worker -l debug -Q beer,coffee, pydal
 # app.conf.task_routes = {
 #    'celery_stuff.serve_a_beer': {'queue': 'beer'},
 #    'celery_stuff.serve_a_coffee': {'queue': 'coffee'}
@@ -73,13 +73,13 @@ def serve_a_coffee(_type, size):
 @app.task
 def read_db(_type, size):
     some_id = 1
+    tbl = 'test_table'
     print('Serving a {} {} !'.format(size, _type))
     try:
         # this task will be executed in its own thread, connect to db
         db._adapter.reconnect()
-        # do something here
-        print ('================================')
-        qu= db.test_table.id == some_id
+        qu= db[tbl].id == some_id
+        #qu= db.test_table.id == some_id
         rows = db(qu).select()
         for r in rows:
             print (r)
