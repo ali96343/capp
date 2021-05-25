@@ -9,3 +9,9 @@
   celery -A apps.capp.celery_stuff worker --loglevel=info
 
 3 firefox localhost:8000/capp
+
+----------------------------------------
+
+fcapp - ported from https://github.com/miguelgrinberg/flask-celery-example
+
+
