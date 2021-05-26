@@ -1,6 +1,10 @@
 ## capp - py4web + redis + celery
 
-0 git clone  capp to  py4web/apps/capp
+redis-server must be installed and running
+
+----------------------------------------
+
+0 put capp to py4web/apps/capp
 
 1 run py4web
 
@@ -12,6 +16,12 @@
 
 ----------------------------------------
 
-fcapp - ported from https://github.com/miguelgrinberg/flask-celery-example
+fcapp - py4web app from https://github.com/miguelgrinberg/flask-celery-example
 
+0 put fcapp to py4web/apps/fcapp
 
+1 run py4web
+
+2 celery -A apps.fcapp.celery_stuff worker --loglevel=info
+
+3 firefox localhost:8000/fcapp

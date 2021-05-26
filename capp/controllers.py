@@ -23,7 +23,7 @@ cel_log_beat= f"/tmp/{APP_NAME}.beat.log"
 
 all_cmds = {
     "redis": "ps axw| grep redis-server| grep -v grep",
-    "celery": "ps axw| grep celery| grep worker | grep -v grep",
+    "celery": "ps axw| grep celery| grep -v grep",
     "kill_cel": "for pid in $(ps -ef | awk '/celery/ {print $2}'); do kill -9 $pid; done",
     "run_cel_worker": f"celery -A {DAPPS}.{APP_NAME}.celery_stuff worker -l info -f {cel_log_worker} --detach", 
     "run_cel_beat": f"celery -A {DAPPS}.{APP_NAME}.celery_stuff beat -l info -f {cel_log_beat} --detach", 
@@ -79,7 +79,7 @@ def index():
         ),
         DIV(
             A(
-                "check celery worker",
+                "check celery",
                 _role="button",
                 _href=URL("command_server", vars=dict(cmd=all_cmds["celery"])),
             ),
@@ -88,6 +88,12 @@ def index():
                 _role="button",
                 _href=URL(
                     "command_server", vars=dict( cmd = all_cmds[ "run_cel_worker"  ] )), 
+            ),
+            A(
+                "run celery beat",
+                _role="button",
+                _href=URL(
+                    "command_server", vars=dict( cmd = all_cmds[ "run_cel_beat"  ] )), 
             ),
             A(
                 "kill celery",
@@ -209,7 +215,7 @@ def command_server():
 
 
 # https://blog.miguelgrinberg.com/post/using-celery-with-flask
-@action("longtask", methods=["POST", "GET"])
+@action("longtask", method=["POST", "GET"])
 def longtask():
     task = long_task.apply_async()
     print(task)
@@ -229,33 +235,33 @@ def taskstatus(task_id=None):
     import json
 
     task = long_task.AsyncResult(task_id)
-    response = {}
+    res = {}
     if task.state == "PENDING":
         # job did not start yet
-        response = {
+        res = {
             "state": task.state,
             "current": 0,
             "total": 1,
             "status": "Pending...",
         }
     elif task.state != "FAILURE":
-        response = {
+        res = {
             "state": task.state,
             "current": task.info.get("current", 0),
             "total": task.info.get("total", 1),
             "status": task.info.get("status", ""),
         }
         if "result" in task.info:
-            response["result"] = task.info["result"]
+            res["result"] = task.info["result"]
     else:
         # something went wrong in the background job
-        response = {
+        res = {
             "state": task.state,
             "current": 1,
             "total": 1,
             "status": str(task.info),  # this is the exception raised
         }
-    return json.dumps(response)
+    return json.dumps(res)
     # return jsonify(response)
 
 @action("celery_queue_status")

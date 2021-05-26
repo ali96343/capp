@@ -1,6 +1,13 @@
 from py4web import action, request, response, abort, redirect, URL, Field
 from yatl.helpers import A, DIV, P
+from py4web.core import Template
 from py4web.utils.form import Form, FormStyleBulma, FormStyleDefault
+from json import dumps
+from .settings import APP_NAME
+
+
+# src: https://github.com/miguelgrinberg/flask-celery-example
+
 from .common import (
     db,
     session,
@@ -13,29 +20,31 @@ from .common import (
     flash,
 )
 
-from json import dumps
 
 from .celery_stuff import long_task, my_background_task, send_async_email
 from .celery_stuff import app as celery_app
 
 
+@action("index", method=["GET", "POST"])
+@action.uses(db, session, T, Template("index.html", delimiters="[[ ]]"))
 @unauthenticated("index", "index.html")
 def index():
     user = auth.get_user()
-    hello_message = T("Hello {first_name}".format(**user) if user else "Hello")
+    ctrl_template_url = "'" + URL("longtask") + "'"
 
+    hello_message = T("Hello {first_name}".format(**user) if user else "Hello")
     err_message = []
 
     email_to = "email"
-    #email_body = "mytext"
-    #email_subj = 'subject'
+    # email_body = "mytext"
+    # email_subj = 'subject'
     send_mode = "mode"
 
     email_form = Form(
         [
-            Field(email_to,   label="send email to", default='nil@nil.com'),
-            #Field(email_subj, label="email text"),
-            #Field(email_body, label="email text"),
+            Field(email_to, label="send email to", default="nil@nil.com"),
+            # Field(email_subj, label="email text"),
+            # Field(email_body, label="email text"),
             Field(send_mode, "boolean", label="send right away/send in one minute"),
         ],
         formstyle=FormStyleDefault,
@@ -44,20 +53,19 @@ def index():
 
     if email_form.accepted:
         print(email_form.vars[email_to])
-        #print(email_form.vars[email_subj])
-        #print(email_form.vars[email_body])
+        # print(email_form.vars[email_subj])
+        # print(email_form.vars[email_body])
         print(email_form.vars[send_mode])
 
         email_data = {
             "subject": "Hello from py4web",
-            "to": email_form.vars[email_to] ,
+            "to": email_form.vars[email_to],
             "body": "This is a test email sent from a background Celery task.",
         }
 
         if email_form.vars[send_mode] == True:
             # send right away
             send_async_email.delay(email_data)
-            # flash('Sending email to {0}'.format(email))
         else:
             # send in one minute
             send_async_email.apply_async(args=[email_data], countdown=60)
@@ -72,11 +80,9 @@ def index():
 @action("longtask", method=["POST"])
 def longtask():
     task = long_task.apply_async()
-    # print (task)
     response.status = 202
     response.content_type = "application/json"
-    location = f"/fcapp/taskstatus/{task.id}"
-    response.set_header("Location", location)
+    response.set_header("Location", URL(f"taskstatus/{task.id}"))
     return dumps({})
 
 
@@ -103,7 +109,4 @@ def taskstatus(task_id=None):
             "status": str(task.info),  # this is the exception raised
         }
     response.content_type = "application/json"
-    # print (dumps(res))
     return dumps(res)
-
-    # return jsonify(response)

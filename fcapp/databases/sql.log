@@ -1,0 +1,38 @@
+timestamp: 2021-05-25T14:57:38.204619
+CREATE TABLE "auth_user"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "username" CHAR(512) UNIQUE,
+    "email" CHAR(512) UNIQUE,
+    "password" CHAR(512),
+    "first_name" CHAR(512),
+    "last_name" CHAR(512),
+    "sso_id" CHAR(512),
+    "action_token" CHAR(512),
+    "last_password_change" TIMESTAMP,
+    "past_passwords_hash" TEXT
+);
+success!
+timestamp: 2021-05-25T14:57:38.217849
+CREATE TABLE "auth_user_tag_groups"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "path" CHAR(512),
+    "record_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  
+);
+success!
+timestamp: 2021-05-25T14:57:38.749422
+CREATE TABLE "test_table"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "f0" CHAR(512),
+    "f1" CHAR(512),
+    "f2" CHAR(512)
+);
+success!
+timestamp: 2021-05-25T14:57:38.815844
+CREATE TABLE "uploaded_files"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "orig_file_name" CHAR(512),
+    "remark" TEXT,
+    "uniq_file_name" CHAR(512),
+    "time" TIMESTAMP
+);
+success!

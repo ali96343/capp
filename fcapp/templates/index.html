@@ -13,17 +13,20 @@
     <p>celery -A apps.fcapp.celery_stuff worker -l info</p>
     [[#= hello_message]]
     <hr>
-    <p>Example 1: Send Asynchronous Email</p>
+    <p>Example 1: Send Asynchronous toy-Email</p>
     [[=email_form]]
     <hr>
     <p>Example 2: Long running task with progress updates</p>
     <!--<button onclick="start_long_task();">Start Long Calculation</button><br><br>-->
-    <button id="start-bg-job">Start Long Calculation</button><br><br>
+    <button id="start-bg-job">Start Long Calculation(pls, wait 5sec )</button><br><br>
     <div id="progress"></div>
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/nanobar/0.2.1/nanobar.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script>
+
+        const long_task_url = [[=XML( ctrl_template_url ) ]]
+
         function start_long_task() {
             // add task status elements
             div = $('<div class="progress"><div></div><div>0%</div><div>...</div><div>&nbsp;</div></div><hr>');
@@ -38,7 +41,7 @@
             // send ajax POST request to start background job
             $.ajax({
                 type: 'POST',
-                url: '/fcapp/longtask',
+                url: long_task_url,   // '/fcapp/longtask',
                 success: function(data, status, request) {
                     status_url = request.getResponseHeader('Location');
                     //alert(  status_url  )
