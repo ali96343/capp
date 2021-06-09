@@ -1,0 +1,4 @@
+
+celery -A celery_tasks worker -l info
+
+python runner.py

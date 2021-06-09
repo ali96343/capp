@@ -25,3 +25,24 @@ fcapp - py4web app from https://github.com/miguelgrinberg/flask-celery-example
 2 celery -A apps.fcapp.celery_stuff worker --loglevel=info
 
 3 firefox localhost:8000/fcapp
+
+----------------------------------------
+
+tcapp - py4web app from https://github.com/dkrichards86/tornado-celery 
+
+
+(tcapp:  celery + websocket + tornado-second-server(localhost:8888) )
+
+
+0 put tcapp to py4web/apps/tcapp
+
+1 run py4web
+
+2 cd apps/tcapp/tor_cel
+
+3 celery -A celery_tasks worker -l info &
+
+4 python runner.py &
+
+5 firefox localhost:8000/tcapp
+
