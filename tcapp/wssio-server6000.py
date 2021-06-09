@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 
-# While this code still works, I would recommend using Fast API for websockets in modern applications.
-# See: https://fastapi.tiangolo.com/advanced/websockets/
-
-# Note this is targeted at python 3
-
 # --------------------------------------------------------------------------------
 import sys
 
@@ -35,8 +30,6 @@ import tornado.websocket
 import tornado.options
 import time
 
-ws_debug = True
-
 LISTEN_PORT = 6000
 LISTEN_ADDRESS = "127.0.0.1"
 
@@ -52,7 +45,7 @@ ws_debug = True
 
 class BaseHandler(tornado.web.RequestHandler):
     def set_default_headers(self):
-        cprint("setting headers!!!", 'yellow')
+        cprint("setting headers!!!", "yellow")
         self.set_header("Access-Control-Allow-Origin", "*")
         self.set_header("Access-Control-Allow-Headers", "x-requested-with")
         self.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
@@ -96,7 +89,7 @@ class WsHandler(tornado.websocket.WebSocketHandler, BaseHandler):
         self.stop = True
 
     def check_origin(self, origin):
-        cprint ('Ws check_origin', 'yellow')
+        cprint("Ws check_origin", "yellow")
         return True
 
 
@@ -127,7 +120,7 @@ _Handler = socketio.get_tornado_handler(sio)
 
 class SioHandler(_Handler, BaseHandler):
     def check_origin(self, origin):
-        cprint ('Sio check_origin', 'yellow')
+        cprint("Sio check_origin", "yellow")
         return True
 
 
@@ -148,4 +141,4 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main() )
+    sys.exit(main())
