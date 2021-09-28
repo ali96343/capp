@@ -6,7 +6,7 @@
     <p id="id_msg" align="center" > [[= date_str ]] </p>
     <p align="center">uptime: every 3 sec</p>
     <p align="center">date: every 1 sec</p>
-    <p id="id_ctrl_msg" align="center" >not connected! run chan_sio!</p>
+    <p id="id_ctrl_msg" align="center" >not connected! run chan_sio ?!</p>
 </div>
 
 <script>
@@ -22,10 +22,13 @@
             });
 
             socket.on('disconnect', function() {
-                socket.emit('sync_hello_connect', {data: 'from browser: connected!'});
                 document.getElementById("id_ctrl_msg").innerHTML = "disconnected!";
-                // console.log('sync connected')
             });
+
+            socket.on('reconnect', ()=>{
+                document.getElementById("id_ctrl_msg").innerHTML = "reconnect!";
+            });
+
 
             socket.on('update_uptime', function(msg) {
                 // console.log('!!!!!!!!!!!!! ' + msg);
