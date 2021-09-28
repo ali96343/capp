@@ -48,7 +48,7 @@ tcapp - py4web app from https://github.com/dkrichards86/tornado-celery
 
 ---------------------------------------
 
-upui - py4web + socketio + celery
+upui - py4web + socketio + celery + redis
 
 ( upui - Dynamically sends a linux-loadavg from /proc/loadavg to html pages every 2 sec and 
 updates part of the page without using ajax, sends data to pydal   )
@@ -71,9 +71,13 @@ celery -A apps.upui.celery_stuff worker -l info
 4 fierfox localhost:8000/upui
 
 5 also, test pgs_reload with
+
   curl http://localhost:8000/upui/pgs_reload
+
   curl http://localhost:8000/upui/sio_pusher
 
 
-idea from https://blog.miguelgrinberg.com/post/dynamically-update-your-flask-web-pages-using-turbo-flask
+idea from 
+
+https://blog.miguelgrinberg.com/post/dynamically-update-your-flask-web-pages-using-turbo-flask
 
