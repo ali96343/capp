@@ -1,0 +1,51 @@
+websocket
+
+https://stackoverflow.com/questions/54648015/python-websockets-how-to-send-message-from-function
+https://stackoverflow.com/questions/47225488/client-websocket-connect-through-proxy
+
+---------------------------------------------------------------------------------
+
+
+asnycio
+
+https://stackoverflow.com/questions/39815771/how-to-combine-celery-with-asyncio
+https://johnfraney.ca/posts/2018/12/20/writing-unit-tests-celery-tasks-async-functions/
+
+https://habr.com/ru/post/502380/
+# tasks.py
+import asyncio
+from asgiref.sync import async_to_sync
+from celery import Celery
+
+app = Celery('async_test', broker='a_broker_url_goes_here')
+
+async def return_hello():
+    await asyncio.sleep(1)
+    return 'hello'
+
+
+@app.task(name="sync_task")
+def sync_task():
+    async_to_sync(return_hello)()
+
+---------------------------------------------------------
+import asyncio
+import uvicorn
+
+from celery import Celery
+from fastapi import FastAPI
+
+app = FastAPI(title='Example')
+worker = Celery('worker', broker='a_broker_url_goes_here')
+
+@worker.task(name='cpu_boun')
+def cpu_bound_task():
+    # Does stuff but let's simplify it
+    print([n for n in range(1000)])
+
+@app.get('/calculate')
+async def calculate():
+    cpu_bound_task.delay()
+
+if __name__ == "__main__":
+    uvicorn.run('main:app', host='0.0.0.0', port=8000)

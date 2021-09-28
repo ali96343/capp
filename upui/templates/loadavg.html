@@ -1,0 +1,49 @@
+<div id="id_load" class="load">
+  <table>
+    <tr><th></th><th>1 min</th><th>5 min</th><th>15 min</th></tr>
+    <tr><th>Load averages:</th><td id="id_1min" >[[= load1 ]]</td><td id="id_5min">[[=  load5  ]]</td><td id="id_15min">[[=  load15  ]]</td></tr>
+  </table>
+    <p id="id_msg" align="center" > [[= date_str ]] </p>
+    <p align="center">uptime: every 2 sec</p>
+    <p align="center">date_str: every 7 sec</p>
+    <p id="id_ctrl_msg" align="center" >ctrl_msg</p>
+</div>
+
+<script>
+
+        $(document).ready(function(){
+
+            const socket = io.connect( SIO_URL  );
+            // const socket = io.connect('http://localhost:3000');
+
+            socket.on('connect', function() {
+                socket.emit('sync_hello_connect', {data: 'from browser: connected!'});
+                // console.log('sync connected')
+            });
+
+            socket.on('update_update', function(msg) {
+                // console.log('!!!!!!!!!!!!! ' + msg);
+                const obj = JSON.parse( msg );
+                document.getElementById("id_1min").innerHTML = obj.load1;
+                document.getElementById("id_5min").innerHTML = obj.load5;
+                document.getElementById("id_15min").innerHTML = obj.load15;
+            });
+
+            socket.on('update_date', function(msg) {
+                // console.log('update_date  ' + msg);
+                document.getElementById("id_msg").innerHTML = msg;
+            });
+
+            socket.on('pgs_reload', function(msg) {
+                window.location.reload(true);
+                document.getElementById("id_ctrl_msg").innerHTML = msg;
+            });
+
+            socket.on('pydal_msg', function(msg) {
+                console.log('pydal_msg ' + msg);
+                document.getElementById("id_ctrl_msg").innerHTML = msg;
+            });
+        });
+
+</script>
+

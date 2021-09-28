@@ -1,0 +1,6 @@
+http://allynh.com/blog/flask-asynchronous-background-tasks-with-celery-and-redis/
+http://blog.dataroadtech.com/asynchronous-task-execution-with-flask-celery-and-socketio/
+https://www.thepythoncode.com/article/async-tasks-with-celery-redis-and-flask-in-python
+https://doc.scalingo.com/languages/python/celery-flask
+https://blog.daftcode.pl/working-with-asynchronous-celery-tasks-lessons-learned-32bb7495586b
+
