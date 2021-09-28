@@ -49,25 +49,45 @@ def page2():
     return locals()
 
 # --------------------------------------------------------------------------------------
-@action("sio_chan_post", method=["GET","POST"])
+@action("sio_chan_post", method=["POST"])
 @action.uses(  CORS() )
 def sio_chan_post():
 
-    def read_body(request):
-        if "wsgi.input" in request:
-            post_data = request["wsgi.input"].read()
-            if isinstance(post_data, bytes):
-                return json.loads(post_data)
-        return None
+    try:
+       json_data = json.loads( request.body.read()   )
 
-    json_data = read_body(request)
-
-    if json_data:
-        event_name = json_data["event_name"]
-        room = json_data["room"]
-        data = json_data["data"]
-        if json_data["broadcast_secret"] == C.BROADCAST_SECRET:
+       event_name = json_data["event_name"]
+       room = json_data["room"]
+       data = json_data["data"]
+       if json_data["broadcast_secret"] == C.BROADCAST_SECRET:
+            cat_value = request.get_header('app-param')
+            print ('from sio_chan_post header: ', cat_value  )
             print("json-post-data: ", json_data)
-            
+    except Exception as ex:
+        print ('sio_chan_post: ',ex )
+        print(sys.exc_info())
+        return 'bad'
+
     return "ok"
 
+
+
+#
+#    def read_body(request):
+#        if "wsgi.input" in request:
+#            post_data = request["wsgi.input"].read()
+#            if isinstance(post_data, bytes):
+#                return json.loads(post_data)
+#        return None
+#
+#    json_data = read_body(request)
+#
+#    if json_data:
+#        event_name = json_data["event_name"]
+#        room = json_data["room"]
+#        data = json_data["data"]
+#        if json_data["broadcast_secret"] == C.BROADCAST_SECRET:
+#            print("json-post-data: ", json_data)
+#            
+#    return "ok"
+#

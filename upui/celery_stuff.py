@@ -33,7 +33,8 @@ def sync_event_post(event_name, data=None, room=None, post=True):
           "broadcast_secret": C.BROADCAST_SECRET,
     } 
 
-    headers_dict = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    headers_dict = {'Content-type': 'application/json', 'Accept': 'text/plain', 
+                    "app-param": 'some-param' }
     x = requests.post(C.post_url, json=json_data, headers=headers_dict)
 
     if x.status_code != 200:
@@ -47,25 +48,25 @@ def update_loadavg():
     l_data = json.dumps( dict( load1=load1, load5=load5, load15=load15  ) )
     # print (l_data)
     r_mgr.emit("update_update", l_data, broadcast=True, include_self=False)
-    sync_event_post(  "update_update" , data=l_data, )
-    print("updated loadavg!")
+    #print("updated loadavg!")
 
 @app.task
 def emit_date():
     data_str = datetime.datetime.now().strftime("%d.%m.%y %H:%M:%S")
     r_mgr.emit("update_date", data_str, broadcast=True, include_self=False)
-    print("date updated!")
+    sync_event_post(  "update_update" , data=data_str, )
+    #print("date updated!")
 
 # https://webdevblog.ru/python-celery/
 # https://medium.com/the-andela-way/crontabs-in-celery-d779a8eb4cf
 app.conf.beat_schedule = {
     "run-me-every-ten-seconds": {
         "task": "apps.%s.celery_stuff.update_loadavg" % settings.APP_NAME  ,
-        "schedule": 2.0,
+        "schedule": 3.0,
     },
     "everyday-task": {
        "task": "apps.%s.celery_stuff.emit_date" % settings.APP_NAME ,
-        "schedule": 7.0,
+        "schedule": 1.0,
     },
 }
 

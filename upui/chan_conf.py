@@ -19,6 +19,7 @@ sio_serv_url =  f"http://{sio_HOST}:{sio_PORT}"
 
 P4W_APP = os.path.abspath(__file__).split(os.sep)[-2]
 
+sio_room = f'{P4W_APP}_room'
 sio_channel = f"sio_{P4W_APP}"
 sio_namespaces= ['/','/test','/chat']
 # https://habr.com/ru/post/243791/
@@ -26,6 +27,7 @@ sio_namespaces= ['/','/test','/chat']
 post_url = f"http://127.0.0.1:8000/{P4W_APP}/sio_chan_post"
 
 BROADCAST_SECRET = "123secret"
+POST_SECRET = "321secret"
 
 SERV_APP_FILE = "chan_sio:app"
 

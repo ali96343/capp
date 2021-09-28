@@ -43,7 +43,7 @@ async def sio_event_post(event_name, data=None, room=None, post=True):
     json_data = {
         "event_name": event_name,
         "data": data,
-        "room": room,
+        "room": C.sio_room, #room,
         "broadcast_secret": C.BROADCAST_SECRET,
     }
 

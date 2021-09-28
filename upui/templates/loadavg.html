@@ -4,17 +4,16 @@
     <tr><th>Load averages:</th><td id="id_1min" >[[= load1 ]]</td><td id="id_5min">[[=  load5  ]]</td><td id="id_15min">[[=  load15  ]]</td></tr>
   </table>
     <p id="id_msg" align="center" > [[= date_str ]] </p>
-    <p align="center">uptime: every 2 sec</p>
-    <p align="center">date_str: every 7 sec</p>
+    <p align="center">uptime: every 1 sec</p>
+    <p align="center">date_str: every 3 sec</p>
     <p id="id_ctrl_msg" align="center" >ctrl_msg</p>
 </div>
 
 <script>
 
-        $(document).ready(function(){
+! function(sio_url) {
 
-            const socket = io.connect( SIO_URL  );
-            // const socket = io.connect('http://localhost:3000');
+            const socket = io.connect( sio_url );
 
             socket.on('connect', function() {
                 socket.emit('sync_hello_connect', {data: 'from browser: connected!'});
@@ -43,7 +42,8 @@
                 console.log('pydal_msg ' + msg);
                 document.getElementById("id_ctrl_msg").innerHTML = msg;
             });
-        });
+
+}(SIO_URL)
 
 </script>
 
