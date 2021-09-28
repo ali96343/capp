@@ -5,8 +5,9 @@ import json
 import socketio
 import requests
 
-if not os.path.abspath("./") in sys.path: 
-    sys.path.append( os.path.abspath("./"))  
+this_dir = os.path.abspath( __file__ )
+if not this_dir in sys.path:
+    sys.path.insert(0,  this_dir )
 
 from . import chan_conf as C
 
@@ -22,26 +23,6 @@ r_mgr = socketio.RedisManager(C.r_url, write_only=True, channel=C.sio_channel)
 app = Celery( "celery_stuff", broker="redis://localhost/2", backend="redis://localhost/3")
 app.control.purge()
 
-
-def sync_event_post(event_name, data=None, room=None, post=True):
-
-
-    json_data = {
-          "event_name": event_name,
-          "data": data,
-          "room": room,
-          "broadcast_secret": C.BROADCAST_SECRET,
-    } 
-
-    headers_dict = {'Content-type': 'application/json', 'Accept': 'text/plain', 
-                    "app-param": 'some-param' }
-    x = requests.post(C.post_url, json=json_data, headers=headers_dict)
-
-    if x.status_code != 200:
-        print(f"error! can not post to: {C.post_url}")
-
-
-
 @app.task
 def update_loadavg():
     load1, load5, load15 = C.inject_load()  
@@ -54,7 +35,7 @@ def update_loadavg():
 def emit_date():
     data_str = datetime.datetime.now().strftime("%d.%m.%y %H:%M:%S")
     r_mgr.emit("update_date", data_str, broadcast=True, include_self=False)
-    sync_event_post(  "update_uptime" , data=data_str, )
+    C.sync_event_post(  "update_date" , data=data_str, )
     #print("date updated!")
 
 # https://webdevblog.ru/python-celery/

@@ -4,9 +4,9 @@
     <tr><th>Load averages:</th><td id="id_1min" >[[= load1 ]]</td><td id="id_5min">[[=  load5  ]]</td><td id="id_15min">[[=  load15  ]]</td></tr>
   </table>
     <p id="id_msg" align="center" > [[= date_str ]] </p>
-    <p align="center">uptime: every 1 sec</p>
-    <p align="center">date_str: every 3 sec</p>
-    <p id="id_ctrl_msg" align="center" >ctrl_msg</p>
+    <p align="center">uptime: every 3 sec</p>
+    <p align="center">date: every 1 sec</p>
+    <p id="id_ctrl_msg" align="center" >not connected! run chan_sio!</p>
 </div>
 
 <script>
@@ -17,6 +17,13 @@
 
             socket.on('connect', function() {
                 socket.emit('sync_hello_connect', {data: 'from browser: connected!'});
+                document.getElementById("id_ctrl_msg").innerHTML = "connected!";
+                // console.log('sync connected')
+            });
+
+            socket.on('disconnect', function() {
+                socket.emit('sync_hello_connect', {data: 'from browser: connected!'});
+                document.getElementById("id_ctrl_msg").innerHTML = "disconnected!";
                 // console.log('sync connected')
             });
 

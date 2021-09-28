@@ -62,6 +62,7 @@ updates part of the page without using ajax, sends data to pydal   )
   cd py4web
 
 celery -A apps.upui.celery_stuff beat &
+
 celery -A apps.upui.celery_stuff worker -l info
 
 3 in other terminal

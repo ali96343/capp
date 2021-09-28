@@ -1,14 +1,7 @@
 import sys, os, socket
+import requests
 
 sio_debug = True
-
-values = {
-    "slider1": 25,
-    "slider2": 0,
-    "counter": 100,  # to be continued
-    "data_str": ":)",
-}
-
 
 r_url = "redis://"
 sio_PORT = 3000
@@ -31,7 +24,7 @@ POST_SECRET = "321secret"
 
 SERV_APP_FILE = "chan_sio:app"
 
-# ---------------------------------------------------------
+# ------  UTILS ----------------------------------------
 
 def isOpen(ip, port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -45,7 +38,6 @@ def isOpen(ip, port):
 def check_sio(h=sio_HOST, p=sio_PORT):
     return isOpen( h,p )
 
-# --------------------------------------------------------
 
 def inject_load():
     if sys.platform.startswith('linux'):
@@ -54,5 +46,28 @@ def inject_load():
     else:
         load = [int(random.random() * 100) / 100 for _ in range(3)]
     return  load[0],  load[1], load[2]
+
+
+def sync_event_post(event_name, data=None, room=None, post=True):
+
+    json_data = {
+          "event_name": event_name,
+          "data": data,
+          "room": room,
+          "broadcast_secret": BROADCAST_SECRET,
+    }
+
+    headers_dict = {'Content-type': 'application/json', 'Accept': 'text/plain',
+                    "app-param": 'some-param' }
+    try:
+       x = requests.post(post_url, json=json_data, headers=headers_dict)
+    except Exception as ex:
+        print ('sync_event_post: ',ex )
+        print(sys.exc_info())
+        return 'bad'
+ 
+
+    if x.status_code != 200:
+        print(f"error! can not post to: {post_url}")
 
 
