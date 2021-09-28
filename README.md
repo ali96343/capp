@@ -65,8 +65,10 @@ celery -A apps.upui.celery_stuff beat &
 celery -A apps.upui.celery_stuff worker -l info
 
 3 in other terminal
+
   cd py4web/apps/upui 
-  ./chan_sio 
+
+  python chan_sio.py
 
 4 fierfox localhost:8000/upui
 
