@@ -47,14 +47,14 @@ def update_loadavg():
     load1, load5, load15 = C.inject_load()  
     l_data = json.dumps( dict( load1=load1, load5=load5, load15=load15  ) )
     # print (l_data)
-    r_mgr.emit("update_update", l_data, broadcast=True, include_self=False)
+    r_mgr.emit("update_uptime", l_data, broadcast=True, include_self=False)
     #print("updated loadavg!")
 
 @app.task
 def emit_date():
     data_str = datetime.datetime.now().strftime("%d.%m.%y %H:%M:%S")
     r_mgr.emit("update_date", data_str, broadcast=True, include_self=False)
-    sync_event_post(  "update_update" , data=data_str, )
+    sync_event_post(  "update_uptime" , data=data_str, )
     #print("date updated!")
 
 # https://webdevblog.ru/python-celery/

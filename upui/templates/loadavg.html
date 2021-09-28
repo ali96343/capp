@@ -20,7 +20,7 @@
                 // console.log('sync connected')
             });
 
-            socket.on('update_update', function(msg) {
+            socket.on('update_uptime', function(msg) {
                 // console.log('!!!!!!!!!!!!! ' + msg);
                 const obj = JSON.parse( msg );
                 document.getElementById("id_1min").innerHTML = obj.load1;

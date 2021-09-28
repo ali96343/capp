@@ -17,13 +17,13 @@ r_mgr = socketio.RedisManager(C.r_url, write_only=True, channel=C.sio_channel)
 
 @action("sio_pusher", method=["GET", "POST"])
 def sio_pusher():
-    data_str = 'hello from sio_pusher'
+    data_str = '! sio_pusher ' + datetime.datetime.now().strftime("%H:%M:%S")
     r_mgr.emit("pydal_msg", data_str, broadcast=True, include_self=False)
     return None
 
 @action("pgs_reload", method=["GET", "POST"])
 def pgs_reload():
-    data_str = 'from pgs_reload ' + datetime.datetime.now().strftime("%d.%m.%y %H:%M:%S")
+    data_str = '! pgs_reload ' + datetime.datetime.now().strftime("%H:%M:%S")
     r_mgr.emit("pgs_reload", data_str, broadcast=True, include_self=False)
     return None
 
