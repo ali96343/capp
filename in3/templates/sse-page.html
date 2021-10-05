@@ -1,0 +1,35 @@
+[[ extend "base.html" ]]
+
+[[ block content ]] 
+<h3>SSE page  [[ = sio_app]] </h3>
+[[ include "curltext.html" ]]
+
+<p>You can visit <a href="[[= URL('page2') ]]">Page 2</a>.</p>
+<p>You can visit <a href="[[= URL('ssepage') ]]">SSE page</a>.</p>
+<p>You can visit <a href="[[= sio_serv_url ]]">sse numbers</a> on [[= sio_port ]]</p>
+
+<p id="id_sse">
+ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+</p>
+
+        <script>
+            const evtSource = new EventSource("[[= sse_url ]]");
+            const id_sse =  document.getElementById('id_sse')
+            // console.log("evtSource: ", evtSource);
+            evtSource.onmessage = function(e) {
+            if (id_sse) { 
+                id_sse.innerText = e.data;
+               // console.log(e);
+                //if (e.data == 20) {
+                //    console.log("Closing connection after 20 numbers.")
+                //    evtSource.close()
+                // }
+               }
+            }
+        </script>
+
+
+
+[[ end ]]
+
+

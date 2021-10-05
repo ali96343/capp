@@ -3,6 +3,30 @@
 redis-server must be installed and running
 
 ----------------------------------------
+in3, in4 - UI updaters with multiple celery-beats-workers + pydal + sse-starlette + uvicorn
+
+0 put in3, in4 to py4web/apps
+
+1 run py4web
+
+2 cd apps/in3 && python run-sio.py -r
+
+3 cd apps/in4 && python run-sio.py -r
+
+4 firefox localhost:8000/in3  localhost:8000/in4
+
+( uvicorn in in3 uses 3000/tcp, uvicorn in in4 uses 5000/tcp )
+
+celery-beats-workers uses /tmp/xshe.app_name files 
+
+( /tmp/xshed.app_name files will be deleted if you run the run-sio.py with the -s key  )
+
+( ports can be changed in the files in3/chan_conf.py, in4/chan_conf.py  )
+
+for stop apps use run-sio.py -s in in3 in4  directory
+
+
+----------------------------------------
 
 0 put capp to py4web/apps/capp
 
