@@ -201,7 +201,7 @@ class App:
             cmd = f"python {C.APPS_DIR}/{C.P4W_APP}/chan_sio.py &"
             save_num += 1
             od[  save_num ] =cmd
-            od[  0 ] =cmd
+            #od[  0 ] =cmd
       return od 
 
     def restart(Z,):
