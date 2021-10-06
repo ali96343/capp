@@ -7,7 +7,8 @@ import socketio
 import httpx
 import requests
 
-this_dir = os.path.dirname( __file__ )
+#this_dir = os.path.dirname( __file__ )
+this_dir = os.path.dirname( os.path.abspath(__file__) )
 if not this_dir in sys.path:
     sys.path.insert(0,  this_dir )
 import chan_conf as C

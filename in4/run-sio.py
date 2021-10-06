@@ -17,8 +17,7 @@ __status__ = "Dev"
 
 
 
-this_dir = os.path.dirname(__file__)
-#this_dir = os.path.abspath(__file__)
+this_dir = os.path.dirname( os.path.abspath(__file__) )
 if not this_dir in sys.path:
     sys.path.insert(0, this_dir)
 
@@ -61,7 +60,7 @@ def run_command(command="ls"):
 
 def kill_pids(pids):
     if pids:
-        [run_command(command=f"kill -9 {p}") for p in pids]
+        [run_command(command=f"kill -9 {p}") for p in pids if os.path.exists(f'/proc/{p}') ]
     return True
 
 def check_external():
@@ -116,13 +115,13 @@ class App:
         if not sys.platform.startswith("linux"):
             click.echo("it's linux-program !!!")
             sys.exit('stop!')
-        if any([plist[-2] != C.P4W_APP, plist[-3] != C.APPS_DIR,]):
+        if any([plist[-1] != C.P4W_APP, plist[-2] != C.APPS_DIR,]):
             click.echo("bad app name, apps dir ...%s" % plist)
             sys.exit("stop! bad env")
             return False
         check_external()
 
-        p4w_dir = "/".join(this_dir.split(os.sep)[:-3])
+        p4w_dir = "/".join(this_dir.split(os.sep)[:-2])
         os.chdir(p4w_dir)
         return "ok"
 
@@ -200,8 +199,8 @@ class App:
       if chan_sio_ok:
             cmd = f"python {C.APPS_DIR}/{C.P4W_APP}/chan_sio.py &"
             save_num += 1
-            od[  save_num ] =cmd
-            #od[  0 ] =cmd
+            #od[  save_num ] =cmd
+            od[  0 ] =cmd
       return od 
 
     def restart(Z,):
@@ -226,7 +225,7 @@ class App:
         click.echo("chan_sio pids: %s %s" %( Z.chan_sio_pids, Z.sio_open) )
         click.echo("py4web pids: %s" % Z.py4web)
         click.echo("redis-server pids: %s" % Z.redis)
-        click.echo('shed_files: %s' % len(Z.shed_files)  )
+        click.echo(f'{C.P4W_APP} shed_files: {len(Z.shed_files)}'  )
         if len(Z.redis) ==0:
               click.echo( 'redis-server: not running!' )
         if len(Z.py4web) == 0:

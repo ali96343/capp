@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Server Sent Evets</title>
+  </head>
+  <body>
+    <h1>Server Sent Events</h1>
+
+    Time: <span id="time"></span>
+
+    <script>
+  //    var eventSource = new EventSource("http://localhost:9009/events")
+  // var source = new EventSource("[[= sse_url ]]");
+  var source = new EventSource("http://localhost:5000");
+      eventSource.onmessage = function(event) {
+        console.log('onmessage', event)
+        element = document.getElementById("time")
+        console.log(event)
+        // element.innerHTML = event.data
+      }
+    </script>
+  </body>
+</html>
+
+
+

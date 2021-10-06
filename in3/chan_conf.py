@@ -26,7 +26,6 @@ sse_get_data = f"http://{p4w_host}:{p4w_port}/{P4W_APP}/lorem_get"
 sio_room = f'{P4W_APP}_room'
 sio_channel = f"sio_{P4W_APP}"
 sio_namespaces= ['/','/test','/chat']
-# https://habr.com/ru/post/243791/
 
 post_url = f"http://{p4w_host}:{p4w_port}/{P4W_APP}/sio_chan_post"
 

@@ -1,0 +1,22 @@
+    <html>
+    <body>
+<p>You can visit <a href="[[= URL('index') ]]">Home</a>.</p>
+<p>You can visit <a href="[[= URL('page2') ]]">Page 2</a>.</p>
+        <h3>SSE - 2 sec</h3>
+        <div id="response"></div>
+
+        <script>
+            const evtSource = new EventSource("[[= sse_url ]]");
+            // console.log("evtSource: ", evtSource);
+            evtSource.onmessage = function(e) {
+                document.getElementById('response').innerText = e.data;
+               // console.log(e);
+                //if (e.data == 20) {
+                //    console.log("Closing connection after 20 numbers.")
+                //    evtSource.close()
+                // }
+            }
+        </script>
+    </body>
+</html>
+

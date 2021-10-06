@@ -4,29 +4,6 @@ import requests
 
 import sys, importlib
 
-
-# https://gist.github.com/vaultah/d63cb4c86be2774377aa674b009f759a
-# https://stackoverflow.com/questions/16981921/relative-imports-in-python-3
-def import_parents(level=1):
-    from pathlib import Path
-    global __package__
-    file = Path(__file__).resolve()
-    parent, top = file.parent, file.parents[level]
-    
-    sys.path.append(str(top))
-    try:
-        sys.path.remove(str(parent))
-    except ValueError: # already removed
-        pass
-
-    __package__ = '.'.join(parent.parts[len(top.parts):])
-    importlib.import_module(__package__) # won't be needed after that
-
-
-#if __name__ == '__main__' and __package__ is None:
-#    import_parents(level=...)
-
-
 sio_debug = False
 
 p4w_host = '127.0.0.1'
@@ -49,7 +26,6 @@ sse_get_data = f"http://{p4w_host}:{p4w_port}/{P4W_APP}/lorem_get"
 sio_room = f'{P4W_APP}_room'
 sio_channel = f"sio_{P4W_APP}"
 sio_namespaces= ['/','/test','/chat']
-# https://habr.com/ru/post/243791/
 
 post_url = f"http://{p4w_host}:{p4w_port}/{P4W_APP}/sio_chan_post"
 
