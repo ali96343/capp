@@ -19,7 +19,6 @@ RED_CHAN2 = str(QUE_NUM + QUE_NUM + 1 )
 from time import sleep
 from celery import Celery
 from celery.schedules import crontab
-#from common import settings, db, Field
 from .common import settings, db, Field
 
 r_mgr = socketio.RedisManager(C.r_url, write_only=True, channel=C.sio_channel)
