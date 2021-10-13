@@ -22,8 +22,8 @@ from time import sleep
 from celery import Celery
 from celery.schedules import crontab
 
-from common import settings, db, Field
-#from .common import settings, db, Field
+#from common import settings, db, Field
+from .common import settings, db, Field
 
 
 

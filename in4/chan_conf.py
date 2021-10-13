@@ -12,8 +12,10 @@ p4w_port = '8000'
 sio_PORT = 5000 
 sio_HOST = p4w_host 
 
-P4W_APP = os.path.abspath(__file__).split(os.sep)[-2]
-APPS_DIR = os.path.abspath(__file__).split(os.sep)[-3]
+
+P4W_APP = os.path.dirname( os.path.abspath(__file__) ).split(os.sep)[-1]
+APPS_DIR = os.path.dirname( os.path.abspath(__file__) ).split(os.sep)[-2]
+
 
 r_url = "redis://"
 
