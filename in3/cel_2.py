@@ -5,12 +5,15 @@ import json
 import socketio
 import requests
 
-#this_dir = os.path.dirname(__file__)
 this_dir = os.path.dirname( os.path.abspath(__file__) )
 if not this_dir in sys.path:
     sys.path.insert(0, this_dir)
 
-from . import chan_conf as C
+#from . import chan_conf as C
+import chan_conf as C
+
+
+
 QUE_NUM, MOD_NM = C.get_name_num(__file__)
 RED_CHAN= str( QUE_NUM + QUE_NUM )
 RED_CHAN2 = str( QUE_NUM + QUE_NUM + 1 )
@@ -18,7 +21,11 @@ RED_CHAN2 = str( QUE_NUM + QUE_NUM + 1 )
 from time import sleep
 from celery import Celery
 from celery.schedules import crontab
-from .common import settings, db, Field
+
+from common import settings, db, Field
+#from .common import settings, db, Field
+
+
 
 r_mgr = socketio.RedisManager(C.r_url, write_only=True, channel=C.sio_channel)
 

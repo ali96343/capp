@@ -101,7 +101,8 @@ def sio_chan_post():
        room = json_data["room"]
        data = json_data["data"]
        if json_data["broadcast_secret"] == C.BROADCAST_SECRET:
-            cat_value = request.get_header('app-param')
+            cat_value = '' # request.get_header('app-param')
+            cat_value = request.headers.get('app-param',  'xxxxxxxx')
             C.sio_debug and print ('from sio_chan_post header: ', cat_value  )
             C.sio_debug and print("json-post-data: ", json_data)
     except Exception as ex:

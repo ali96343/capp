@@ -2,7 +2,7 @@ import sys, os, socket, re
 import requests
 
 
-import sys, importlib
+import sys
 
 sio_debug = False
 
@@ -33,6 +33,7 @@ BROADCAST_SECRET = "123secret"
 POST_SECRET = "321secret"
 
 SERV_APP_FILE = "chan_sio:app"
+SIO_FILE=SERV_APP_FILE.split(':')[0] + '.py'
 
 # ------  UTILS ----------------------------------------
 

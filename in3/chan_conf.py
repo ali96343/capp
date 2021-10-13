@@ -32,7 +32,9 @@ post_url = f"http://{p4w_host}:{p4w_port}/{P4W_APP}/sio_chan_post"
 BROADCAST_SECRET = "123secret"
 POST_SECRET = "321secret"
 
+
 SERV_APP_FILE = "chan_sio:app"
+SIO_FILE=SERV_APP_FILE.split(':')[0] + '.py'
 
 # ------  UTILS ----------------------------------------
 
@@ -45,7 +47,7 @@ def isOpen(ip, port):
     except:
         return False
 
-def check_sio(h=sio_HOST, p=sio_PORT):
+def check_sio_tcp(h=sio_HOST, p=sio_PORT):
     return isOpen( h,p )
 
 

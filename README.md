@@ -3,7 +3,7 @@
 redis-server must be installed and running
 
 ----------------------------------------
-in3, in4 - UI updaters with multiple celery-beats-workers + pydal + sse-starlette + uvicorn
+in3, in4 - UI updaters with multiple celery-beats-workers + pydal + sse-starlette + uvicorn + socketio
 
 0 put in3, in4 to py4web/apps
 

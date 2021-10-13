@@ -27,10 +27,12 @@ import chan_conf as C
 # ------------------- utils --------------------
 def run_cmd_list(cmd_list):
     my_env = os.environ.copy()
-    if isinstance( cmd_list, list ):
-        [subprocess.Popen(e.strip().split(), env=my_env ) for e in cmd_list]
     if isinstance( cmd_list, dict ):
         [subprocess.Popen(v.strip().split(), env=my_env ) for k,v in cmd_list.items()]
+        return
+    if isinstance( cmd_list, list ):
+        [subprocess.Popen(e.strip().split(), env=my_env ) for e in cmd_list]
+    return
 
 def shed2list():
 
@@ -89,6 +91,7 @@ def port2pids(port):
     return []
 
 def ifOpenClose():
+     # check_sio_tcp ()
      if C.isOpen(C.sio_HOST, C.sio_PORT):
         port_pids = port2pids(C.sio_PORT)
         kill_pids( port_pids  )
@@ -154,8 +157,6 @@ class App:
         Z.silent = silent
         Z.env_ok = Z.test_env()
         Z.celery_pids = Z.find_celery()
-        #Z.worker = Z.find_worker()
-        #Z.beat = Z.find_beat()
         Z.celery_stuff_pids = Z.find_celery_stuff()
         Z.chan_sio_pids = Z.find_chan_sio()
         Z.py4web = name2pids("py4web")
@@ -174,8 +175,7 @@ class App:
     def loader(Z,):
       from collections import OrderedDict
       od = {}
-      chan_sio_ok = False
-      save_num =0
+      chan_sio_file = False
       cmd = ''
       for e in os.listdir(this_dir):
           if e.startswith( C.cel_files_pre, ):
@@ -183,23 +183,22 @@ class App:
             y=''
             try:
                 y = int( ''.join(x) )
-                if save_num < y:
-                    save_num = y
             except Exception as ex:
                 print(sys.exc_info() )
                 print(  f'need unique integer in file name {e}' )
                 sys.exit('stop!')
             z = str(y)
+            if z=='0':
+               click.echo('can not use "0" as task number!')
+               continue
             cmd = f'celery -A {C.APPS_DIR}.{C.P4W_APP}.{C.cel_files_pre}{z} worker -Q {C.cel_queue_pre}{z} -B -s {C.shed_path}-{z}'  
             od[y] = cmd
             
           elif e.startswith( 'chan_sio' ):
-                chan_sio_ok = True
+                chan_sio_file = True
 
-      if chan_sio_ok:
-            cmd = f"python {C.APPS_DIR}/{C.P4W_APP}/chan_sio.py &"
-            save_num += 1
-            #od[  save_num ] =cmd
+      if chan_sio_file:
+            cmd = f"python {C.APPS_DIR}/{C.P4W_APP}/{C.SIO_FILE} &"
             od[  0 ] =cmd
       return od 
 
@@ -269,8 +268,8 @@ def cli_main(restart, stop, kill_celery):
         app.restart()
         click.echo("restarted" )
     elif stop:
-        print("stoped")
         app.stop()
+        click.echo("stoped")
     else:
         app.report()
 

@@ -7,17 +7,14 @@ import socketio
 import httpx
 import requests
 
-#this_dir = os.path.dirname( __file__ )
 this_dir = os.path.dirname( os.path.abspath(__file__) )
 if not this_dir in sys.path:
     sys.path.insert(0,  this_dir )
 import chan_conf as C
 
-# pip install aioredis==1.3.1
-
 # -----------------------------------------------------------------
 
-# https://github.com/sysid/sse-starlette/blob/master/example.py !!!!!!!!!!!!!!!!
+# https://github.com/sysid/sse-starlette/blob/master/example.py !
 
 import logging
 import asyncio
@@ -238,11 +235,11 @@ async def disconnect(sid):
 
 @sio.event
 async def a_pydal_msg(sid, data):
-    print(data)
+    sio_debug and  print(data)
 
 @sio.event
 async def a_pgs_reload(sid, data):
-    print(data)
+    sio_debug and print(data)
 
 # -----------------------------------------------------------------------------------------------
 
