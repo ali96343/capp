@@ -39,6 +39,9 @@ app.control.purge()
 def emit_date():
     data_str = datetime.datetime.now().strftime("%d.%m.%y %H:%M:%S")
     r_mgr.emit("update_date", data_str, broadcast=True, include_self=False)
+    import random
+    chart_data = json.dumps( dict( value=random.randint( 10, 90) )   )
+    r_mgr.emit("update_chart", chart_data, broadcast=True, include_self=False)
     C.sync_event_post(
         "update_date", data=data_str,
     )

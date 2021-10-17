@@ -37,10 +37,19 @@ def run_cmd_list(cmd_list):
 def shed2list():
 
     res = []
+    common_shed = []
     for file in os.listdir(C.cel_shed_dir):
         if file.startswith(C.cel_shed_pref):
             res.append(os.path.join(C.cel_shed_dir, file))
-    return res
+        if file.startswith(C.cel_shed_common_pref):
+            common_shed.append(os.path.join(C.cel_shed_dir, file))
+    sio_ports=set()
+    for e in common_shed:
+         sio_ports.add(e.split('.')[1])
+    #if len (res) != len( common_shed ):
+    #     print ( '+++ common shed files esxis! ',common_shed )
+    #print ( 'all sio_ports: ', sio_ports )
+    return res, common_shed , sio_ports
 
 def rm_shed( flist  ):
     for e in flist:
@@ -70,7 +79,7 @@ def check_external():
        res =run_command (f'which {e}') 
        if res == b'':
            click.echo (f'can not find {e}!')
-           sys.exit(f'stop! bad env: please, install {e}')
+           sys.exit(f'stop! bad env: please, install {e}, or set $PATH')
 
 
 def name2pids(name):
@@ -161,7 +170,7 @@ class App:
         Z.chan_sio_pids = Z.find_chan_sio()
         Z.py4web = name2pids("py4web")
         Z.redis = name2pids("redis-server")
-        Z.shed_files = shed2list()
+        Z.shed_files, Z.shed_common_files, Z.ports_common = shed2list()
         Z.sio_open = 'open'  if C.isOpen(C.sio_HOST, C.sio_PORT) else 'close'
         Z.p4w_open = 'open'  if C.isOpen(C.p4w_host, C.p4w_port) else 'close'
 
@@ -210,8 +219,13 @@ class App:
         cmds = Z.loader()
         run_cmd_list( cmds )
     
-    def kill_all_celery(Z,):
+    def kill_all_sio(Z,):
+        for e in Z.ports_common:
+            port_pids = port2pids( e  )
+            kill_pids( port_pids )
+              #Z.shed_files, Z.shed_common_files, Z.ports_common = shed2list()
         kill_pids( Z.celery_stuff_pids )
+        rm_shed( Z.shed_common_files  )
         return True
 
     def report(Z,):
@@ -220,7 +234,7 @@ class App:
         click.echo(f"app {C.P4W_APP}, {C.sio_HOST}:{C.sio_PORT} {Z.sio_open}, {C.p4w_host}:{C.p4w_port} {Z.p4w_open}"  )
         click.echo("apps_dir: %s " % C.APPS_DIR)
         click.echo("env: %s " % Z.env_ok)
-        click.echo("cel_ pids: %s" % Z.celery_pids)
+        #click.echo("cel_pids: %s" % Z.celery_pids)
         click.echo("chan_sio pids: %s %s" %( Z.chan_sio_pids, Z.sio_open) )
         click.echo("py4web pids: %s" % Z.py4web)
         click.echo("redis-server pids: %s" % Z.redis)
@@ -231,9 +245,12 @@ class App:
               click.echo( 'py4web: not running' )
         if len(Z.celery_pids) == 0 or len( Z.chan_sio_pids )==0:
               click.echo( ' --- channel not running: python run-sio.py  ---' ) 
-        if len(Z.celery_stuff_pids) >  len(Z.celery_pids):
-              click.echo( ' --- multiple celery_stuff.py ? ---' ) 
-              click.echo( "celery in memory: %s" % Z.celery_stuff_pids  )
+        #if len(Z.celery_stuff_pids) >  len(Z.celery_pids):
+        #      click.echo( '--- multiple celery tasks ---' ) 
+              #click.echo( "celery in memory: %s" % Z.celery_stuff_pids  )
+        if len(Z.ports_common) >1  :
+              print ('--- multiple sio tasks: ', Z.ports_common  )  
+              #Z.shed_files, Z.shed_common_files, Z.ports_common = shed2list()
        
 
 
@@ -248,7 +265,7 @@ class App:
     "--stop", "-s", is_flag=True, help=f"{C.P4W_APP} stop celery & chan_sio if running"
 )
 @click.option(
-    "--kill_celery", "-kc", is_flag=True, help=f"killall celery"
+    "--kill_celery", "-kc", is_flag=True, help=f"killall sio and celery"
 )
 def cli_main(restart, stop, kill_celery):
 
@@ -274,7 +291,7 @@ def cli_main(restart, stop, kill_celery):
         app.report()
 
     if kill_celery:
-       app.kill_all_celery()  
+       app.kill_all_sio()  
        click.echo( "all celery pids: %s" %  name2pids( 'celery' ) )
 
 

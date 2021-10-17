@@ -1,7 +1,9 @@
 <div id="id_load" class="load">
   <table>
     <tr><th></th><th>1 min</th><th>5 min</th><th>15 min</th></tr>
-    <tr><th>Load averages:</th><td id="id_1min" >[[= load1 ]]</td><td id="id_5min">[[=  load5  ]]</td><td id="id_15min">[[=  load15  ]]</td></tr>
+    <tr><th>Load averages:</th><td id="id_1min" >[[= t_vars['load1'] ]]</td>
+    <td id="id_5min">[[=  t_vars['load5']  ]]</td>
+    <td id="id_15min">[[=  t_vars['load15']  ]]</td></tr>
   </table>
     <p id="id_msg" align="center" > [[= date_str ]] </p>
     <p align="center">uptime - 3 sec, select - 5 sec, sse - 2 sec</p>

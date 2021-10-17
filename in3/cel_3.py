@@ -16,10 +16,8 @@ QUE_NUM, MOD_NM = C.get_name_num(__file__)
 RED_CHAN = str( QUE_NUM + QUE_NUM )
 RED_CHAN2 = str(QUE_NUM + QUE_NUM + 1 )
 
-from time import sleep
 from celery import Celery
 from celery.schedules import crontab
-
 from .common import settings, db, Field
 
 

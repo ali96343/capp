@@ -1,17 +1,16 @@
-import sys, os, socket, re
-import requests
-
-
-import sys
+import sys, os, socket, random, requests
+#import sys, importlib
 
 sio_debug = False
 
 p4w_host = '127.0.0.1'
 p4w_port = '8000'
 
-sio_PORT = 5000 
+sio_PORT = 5000
 sio_HOST = p4w_host 
 
+# P4W_APP = os.path.abspath(__file__).split(os.sep)[-2]
+# APPS_DIR = os.path.abspath(__file__).split(os.sep)[-3]
 
 P4W_APP = os.path.dirname( os.path.abspath(__file__) ).split(os.sep)[-1]
 APPS_DIR = os.path.dirname( os.path.abspath(__file__) ).split(os.sep)[-2]
@@ -23,6 +22,11 @@ sio_serv_url =  f"http://{sio_HOST}:{sio_PORT}"
 sse_url = f"http://{sio_HOST}:{sio_PORT}/pydalsse" 
 sse_get_data = f"http://{p4w_host}:{p4w_port}/{P4W_APP}/lorem_get" 
 
+#---------------------------------------------
+jpeg_stream_url = f"http://{sio_HOST}:{sio_PORT}/jpeg_stream" 
+video_stream_url = f"http://{sio_HOST}:{sio_PORT}/video_stream" 
+#---------------------------------------------
+
 
 
 sio_room = f'{P4W_APP}_room'
@@ -33,6 +37,7 @@ post_url = f"http://{p4w_host}:{p4w_port}/{P4W_APP}/sio_chan_post"
 
 BROADCAST_SECRET = "123secret"
 POST_SECRET = "321secret"
+
 
 SERV_APP_FILE = "chan_sio:app"
 SIO_FILE=SERV_APP_FILE.split(':')[0] + '.py'
@@ -48,7 +53,7 @@ def isOpen(ip, port):
     except:
         return False
 
-def check_sio(h=sio_HOST, p=sio_PORT):
+def check_sio_tcp(h=sio_HOST, p=sio_PORT):
     return isOpen( h,p )
 
 
@@ -117,10 +122,10 @@ def get_name_num(fnm):
 # ----------------------------------------------------------
 
 cel_shed_dir='/tmp'
-cel_shed_pref=f'xshed.{P4W_APP}-'
+cel_shed_common_pref='xshed'
+cel_shed_pref=f'{cel_shed_common_pref}.{sio_PORT}.{P4W_APP}-'
 shed_path=os.path.join( cel_shed_dir, cel_shed_pref  )
 cel_files_pre='xcel_'
 cel_queue_pre=cel_files_pre #   'que'
-
 
 # --------------------------------

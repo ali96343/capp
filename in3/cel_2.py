@@ -18,10 +18,8 @@ QUE_NUM, MOD_NM = C.get_name_num(__file__)
 RED_CHAN= str( QUE_NUM + QUE_NUM )
 RED_CHAN2 = str( QUE_NUM + QUE_NUM + 1 )
 
-from time import sleep
 from celery import Celery
 from celery.schedules import crontab
-
 from .common import settings, db, Field
 
 
@@ -42,6 +40,10 @@ app.control.purge()
 def emit_date():
     data_str = datetime.datetime.now().strftime("%d.%m.%y %H:%M:%S")
     r_mgr.emit("update_date", data_str, broadcast=True, include_self=False)
+    import random
+    chart_data = json.dumps( dict( value=random.randint( 10, 90) )   )
+    r_mgr.emit("update_chart", chart_data, broadcast=True, include_self=False)
+
     C.sync_event_post(
         "update_date", data=data_str,
     )

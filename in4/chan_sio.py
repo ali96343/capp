@@ -1,38 +1,43 @@
 #!/usr/bin/env python3
 
-import sys, os
+import time, sys, os
 
 import uvicorn
 import socketio
 import httpx
-import requests
 
-this_dir = os.path.dirname( __file__ )
+from renoir import Renoir
+
+
+this_dir = os.path.dirname( os.path.abspath(__file__) )
 if not this_dir in sys.path:
     sys.path.insert(0,  this_dir )
+
 import chan_conf as C
 
-# pip install aioredis==1.3.1
-
+menu_vars = {
+        'url_home': f"http://{C.p4w_host}:{C.p4w_port}/{C.P4W_APP}/index",
+        'url_page2': f"http://{C.p4w_host}:{C.p4w_port}/{C.P4W_APP}/page2",
+        'url_chart': f"http://{C.p4w_host}:{C.p4w_port}/{C.P4W_APP}/chart",
+        }
 # -----------------------------------------------------------------
 
-# https://github.com/sysid/sse-starlette/blob/master/example.py !!!!!!!!!!!!!!!!
+# https://github.com/sysid/sse-starlette/blob/master/example.py !
 
 import logging
-import asyncio
-from starlette.applications import Starlette
+#import asyncio
+#from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import HTMLResponse
-from starlette.routing import Route
-from starlette.responses import JSONResponse, PlainTextResponse
-from starlette.exceptions import HTTPException
+#from starlette.responses import JSONResponse, PlainTextResponse
+#from starlette.exceptions import HTTPException
 
-from sse_starlette.sse import EventSourceResponse, unpatch_uvicorn_signal_handler
+from sse_starlette.sse import EventSourceResponse #, unpatch_uvicorn_signal_handler
 
 # --------------------------
 from starlette.middleware import Middleware
-from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
-from starlette.middleware.trustedhost import TrustedHostMiddleware
+#from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
+#from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.middleware.cors import CORSMiddleware
 
 # Ensure that all requests include an 'example.com' or '*.example.com' host header,
@@ -52,17 +57,189 @@ _log = logging.getLogger(__name__)
 log_fmt = r"%(asctime)-15s %(levelname)s %(name)s %(funcName)s:%(lineno)d %(message)s"
 datefmt = "%m-%d-%Y %H:%M:%S"
 
+#-----------------------------------------------------------------------------------------------------
+
+import asyncio
+
+from starlette.applications import Starlette
+from starlette.responses import Response
+from starlette.routing import Route, Mount
+
+
+from uvicorn.main import Server
+
+original_handler = Server.handle_exit
+
+class AppStatus:
+    # https://stackoverflow.com/questions/58133694/graceful-shutdown-of-uvicorn-starlette-app-with-websockets
+    should_exit = False
+
+    @staticmethod
+    def handle_exit(*args, **kwargs):
+        AppStatus.should_exit = True
+        original_handler(*args, **kwargs)
+
+Server.handle_exit = AppStatus.handle_exit
+
+this_dir = os.path.dirname( os.path.abspath(__file__) )
+
+if not this_dir in sys.path:
+    sys.path.insert(0,  this_dir )
+
+# https://stackoverflow.com/questions/13386681/streaming-data-with-python-and-flask
+# https://towardsdatascience.com/how-to-display-video-streaming-from-a-webcam-using-flask-7a15e26fbab8
+
+# --------------------------------------------------------------------------------------------------
+
+mp4_html= """
+<!DOCTYPE html>
+   <html style="font-size: 18px;">
+    <head>
+        <title>webm video</title>
+    </head>
+    <body>
+        <div>
+         <a href="[[= url_home ]]">Home</a>&nbsp;
+         <a href="[[= url_page2 ]]">Page 2</a>&nbsp;
+         <a href="[[= url_chart ]]">Chart</a>
+        </div>
+        <h3>https://github.com/stribny/fastapi-video/</h3>
+        <video width="320" controls muted="muted">
+            <source src="/video/" type="video/webm" />
+        </video>
+    </body>
+</html>
+"""
+
+async def video_home(request):
+    template = Renoir(delimiters=('[[', ']]'))
+    return HTMLResponse ( template._render(source = mp4_html , context=menu_vars, ) )
+
+
+
+
+
+
+# https://github.com/stribny/fastapi-video/
+
+async def video_endpoint(range):
+
+    CHUNK_SIZE = 3*1024*1024
+    video_path = os.path.join(this_dir, "video.webm")
+    if not os.path.isfile(  video_path ):
+        raise RuntimeError(f"Could not open {video_path}.")
+
+    start = 0
+    end = start + CHUNK_SIZE
+
+    with open(video_path, "rb") as video:
+        if AppStatus.should_exit:
+           return Response(b'bye', status_code=200,)
+        await asyncio.sleep(0.1)
+        video.seek(start)
+        data = video.read(end - start)
+        filesize = str( os.path.getsize( video_path  )  ) 
+        headers = {
+            'Content-Range': f'bytes {str(start)}-{str(end)}/{filesize}',
+            'Accept-Ranges': 'bytes'
+        }
+        return Response(data, status_code=206, headers=headers, media_type="video/webm")
+
+routes = [Route("/video_stream", endpoint=video_home), Route("/video/", endpoint=video_endpoint)]
+
+# --------------------------------------------------------------------------------------------------
+
+jpeg_html="""
+<html>
+  <head>
+  </head>
+  <body>
+    <h3>jpeg_stream</h3>
+    <h3>https://blog.miguelgrinberg.com/post/video-streaming-with-flask</h3>
+    <img src="/jpeg_stream/">
+  </body>
+</html>
+"""
+
+async def jpeg_home(request):
+    myvars = {
+        'jpeg_stream_url' : C.jpeg_stream_url,
+        'video_stream_url' : C.video_stream_url,
+        'message': 'jpeg streaming',
+       }
+    template = Renoir(delimiters=('[[', ']]'))
+    return HTMLResponse ( template._render(source = jpeg_html , context=myvars, ) )
+
+
+
+
+
+class MiguelCamera:
+    def __init__(self):
+        self.imgs = [open(this_dir+ os.sep +f + '.jpg', 'rb').read() for f in ['1', '2', '3']]
+        if len(self.imgs) != 3 :
+            raise RuntimeError("Could not open jpeg-s.")
+
+
+    async def frames(self):
+                yield self.imgs[int(time.time()) % 3]
+                await asyncio.sleep(1.0)
+
+
+
+
+
+async def jpeg_stream(scope, receive, send):
+    message = await receive()
+    camera = MiguelCamera()
+
+
+    if message["type"] == "http.request":
+       await send(
+            {
+                "type": "http.response.start",
+                "status": 200,
+                "headers": [
+                    [b"Content-Type", b"multipart/x-mixed-replace; boundary=frame"]
+                ],
+            }
+          )
+       while AppStatus.should_exit is False:
+           await asyncio.sleep(0.1)
+
+           async for frame in camera.frames():
+                data = b"".join(
+                    [
+                        b"--frame\r\n",
+                        b"Content-Type: image/jpeg\r\n\r\n",
+                        frame,
+                        b"\r\n",
+                    ]
+                )
+                await send(
+                    {"type": "http.response.body", "body": data, "more_body": True}
+                )
+
+
+
+routes += [Route("/stream_jpeg", endpoint=jpeg_home), Mount("/jpeg_stream/", jpeg_stream)]
+
+#-----------------------------------------------------------------------------------------------------
+
 if C.sio_debug:
      logging.basicConfig(format=log_fmt, level=logging.DEBUG, datefmt=datefmt)
 else:
      logging.basicConfig(format=log_fmt, level=logging.CRITICAL, datefmt=datefmt)
 
-html_sse = """
-    <html>
+numbers_html = """
+   <html style="font-size: 18px;">
     <body>
-<p>You can visit <a href="http://%s:%s/%s/index">Home</a>.</p>
-<p>You can visit <a href="http://%s:%s/%s/page2">Page 2</a>.</p>
-        <h3>sse numbers < 20 - 1 sec</h3>
+        <div>
+         <a href="[[= url_home ]]">Home</a>&nbsp;
+         <a href="[[= url_page2 ]]">Page 2</a>&nbsp;
+         <a href="[[= url_chart ]]">Chart</a>
+        </div>
+        <h3>sse numbers < 20 - 1.5 sec</h3>
         <div id="response"></div>
 
         <script>
@@ -86,25 +263,30 @@ html_sse = """
         </script>
     </body>
 </html>
-""" % ( C.p4w_host, C.p4w_port, C.P4W_APP,  C.p4w_host, C.p4w_port , C.P4W_APP)
+""" 
+
+async def numbers_home(req: Request):
+   # return HTMLResponse(html_sse)
+    template = Renoir(delimiters=('[[', ']]'))
+    return HTMLResponse ( template._render(source = numbers_html , context=menu_vars, ) )
 
 
 # @sse_app.route('/hello')
-async def homepage(request):
-    return JSONResponse(content={"message": "hi"})
+#async def homepage(request):
+#    return JSONResponse(content={"message": "hi"})
 
 
 # @sse_app.route('/hello-test')
-async def test(request):
-    return JSONResponse(content={"test": "the test route"})
+#async def test(request):
+#    return JSONResponse(content={"test": "the test route"})
 
 
 async def numbers(minimum, maximum):
     """Simulates and limited stream"""
 
     for i in range(minimum, maximum + 1):
-        await asyncio.sleep(1.9)
         yield dict(data=i)
+        await asyncio.sleep(1.5)
 
 
 async def endless(req: Request):
@@ -147,12 +329,10 @@ async def sse(request):
     return EventSourceResponse(generator)
 
 
-async def home(req: Request):
-    return HTMLResponse(html_sse)
 
 
-routes = [
-    Route("/", endpoint=home),
+routes += [
+    Route("/", endpoint=numbers_home),
     Route("/numbers", endpoint=sse),
     #Route("/endless", endpoint=endless),
     Route("/pydalsse", endpoint=endless),
@@ -237,11 +417,11 @@ async def disconnect(sid):
 
 @sio.event
 async def a_pydal_msg(sid, data):
-    print(data)
+    sio_debug and  print(data)
 
 @sio.event
 async def a_pgs_reload(sid, data):
-    print(data)
+    sio_debug and print(data)
 
 # -----------------------------------------------------------------------------------------------
 
