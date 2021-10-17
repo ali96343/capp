@@ -3,7 +3,7 @@
 redis-server must be installed and running
 
 ----------------------------------------
-in3, in4 - UI updaters with multiple celery-beats-workers + pydal + sse-starlette + uvicorn + socketio
+in3, in4 - UI updaters with multiple celery-beats-workers + pydal + sse-starlette + uvicorn + socketio + live_chart + jpeg_stream + video_stream
 
 0 put in3, in4 to py4web/apps
 
@@ -17,7 +17,7 @@ in3, in4 - UI updaters with multiple celery-beats-workers + pydal + sse-starlett
 
 ( uvicorn in in3 uses 3000/tcp, uvicorn in in4 uses 5000/tcp )
 
-celery-beats-workers uses /tmp/xshe.app_name files 
+celery-beats-workers uses /tmp/xshed.app_name files 
 
 ( /tmp/xshed.app_name files will be deleted if you run the run-sio.py with the -s key  )
 
