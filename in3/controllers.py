@@ -72,9 +72,6 @@ def pgs_reload():
     return None
 
 
-sio_serv_url = C.sio_serv_url
-
-
 @unauthenticated("index", "index.html")
 def index():
     user = auth.get_user()

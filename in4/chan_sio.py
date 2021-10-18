@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+# https://bofeng.github.io/post/starlette-quick-manual/
+# https://jakearchibald.com/2021/cors/
+# https://fastapi.tiangolo.com/advanced/using-request-directly/
+# https://python-gino.org/docs/en/1.1b2/tutorials/fastapi.html
+
+
 import time, sys, os
 
 import uvicorn

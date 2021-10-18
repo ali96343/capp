@@ -24,6 +24,7 @@
 <div>
 <a href="[[= t_vars['index'] ]]">Home</a>&nbsp;
 <a href="[[= t_vars['page2'] ]]">Page 2</a>&nbsp;
+app_name= [[=t_vars["sio_app"] ]]
 </div>
 
          <div id='id_status'>run sio, pls</div>
@@ -47,7 +48,7 @@
 
             socket.on('connect', ()=> {
                 socket.emit('sync_hello_connect', {data: 'hello from chart!'});
-                document.getElementById("id_status").innerHTML = 'connect!' 
+                document.getElementById("id_status").innerHTML = 'connect, sio_channel=  ' + data_url 
                 //console.log('chart connected')
             });
 

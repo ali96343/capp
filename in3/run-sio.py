@@ -146,8 +146,32 @@ class App:
     def find_beat(Z,):
         return name2pids(f"{C.P4W_APP}.celery_stuff beat")
 
-    def find_celery_stuff(Z,):
-        return name2pids("celery")
+    def find_celery4sio(Z,):
+
+        # /tmp/xshed.3000.xxxxxxxxxx
+        # /tmp/xshed.5000.xxxxxxxxxx
+
+        my_celery=[]
+        other_celery=[]
+
+        pref_path=set()
+        for e in Z.shed_common_files:
+             lx = e.split('.')
+             pref_path.add ( '.'.join(lx[:2])  )
+        #print ( pref_path )
+
+     
+        for e in pref_path:
+            if str(C.sio_PORT) in e:
+                my_celery = name2pids(e )
+            else:
+                other_celery = name2pids(e )
+        #print ('+++ my_celery: ',my_celery )
+        #print ('+++ other_celery: ',other_celery )
+        #print ('--- ', name2pids("celery") )
+
+        return my_celery + other_celery 
+        #return name2pids("celery")
 
     def find_chan_sio(Z,):
         #return  port2pids(C.sio_PORT)
@@ -166,20 +190,27 @@ class App:
         Z.silent = silent
         Z.env_ok = Z.test_env()
         Z.celery_pids = Z.find_celery()
-        Z.celery_stuff_pids = Z.find_celery_stuff()
+        #Z.celery_stuff_pids = Z.find_celery4sio()
         Z.chan_sio_pids = Z.find_chan_sio()
         Z.py4web = name2pids("py4web")
         Z.redis = name2pids("redis-server")
         Z.shed_files, Z.shed_common_files, Z.ports_common = shed2list()
+        Z.celery_stuff_pids = Z.find_celery4sio()
         Z.sio_open = 'open'  if C.isOpen(C.sio_HOST, C.sio_PORT) else 'close'
         Z.p4w_open = 'open'  if C.isOpen(C.p4w_host, C.p4w_port) else 'close'
 
     def stop(Z,):
-        kill_pids(Z.celery_pids)
         kill_pids(Z.chan_sio_pids)
+        kill_pids(Z.celery_pids)
         rm_shed( Z.shed_files)
         if ifOpenClose() == False:
            echo.click('can not close sio port')
+        shed_port_files = [ e for e in Z.shed_common_files if str(C.sio_PORT) in e ]
+        if len( shed_port_files ):
+            print ( f'found sio tasks on my port {C.sio_PORT}', shed_port_files   )
+            #rm_shed ( shed_port_files )
+            #print ( '--- removed shed-files: ', shed_port_files )
+               
 
     def loader(Z,):
       from collections import OrderedDict
@@ -265,9 +296,9 @@ class App:
     "--stop", "-s", is_flag=True, help=f"{C.P4W_APP} stop celery & chan_sio if running"
 )
 @click.option(
-    "--kill_celery", "-kc", is_flag=True, help=f"killall sio and celery"
+    "--killall_sio_and_celery", "-kc", is_flag=True, help=f"killall sio and celery"
 )
-def cli_main(restart, stop, kill_celery):
+def cli_main(restart, stop, killall_sio_and_celery):
 
     """
     celety and socketio tasks loader for py4web app\n
@@ -290,7 +321,7 @@ def cli_main(restart, stop, kill_celery):
     else:
         app.report()
 
-    if kill_celery:
+    if killall_sio_and_celery:
        app.kill_all_sio()  
        click.echo( "all celery pids: %s" %  name2pids( 'celery' ) )
 

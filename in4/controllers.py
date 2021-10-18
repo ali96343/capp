@@ -72,9 +72,6 @@ def pgs_reload():
     return None
 
 
-sio_serv_url = C.sio_serv_url
-
-
 @unauthenticated("index", "index.html")
 def index():
     user = auth.get_user()
@@ -84,7 +81,6 @@ def index():
 
     t_vars = html_vars
     return locals()
-    # return dict(message=message, date_str=date_str, lorem1=lorem1, sio_serv_url=sio_serv_url, sio_app=sio_app, sio_port=sio_port )
 
 
 @action("page2", method=["GET", "POST"])
