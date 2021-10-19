@@ -91,7 +91,7 @@ if not this_dir in sys.path:
 
 # --------------------------------------------------------------------------------------------------
 
-mp4_html= """
+webm_html= """
 <!DOCTYPE html>
    <html style="font-size: 18px;">
     <head>
@@ -113,7 +113,7 @@ mp4_html= """
 
 async def video_home(request):
     template = Renoir(delimiters=('[[', ']]'))
-    return HTMLResponse ( template._render(source = mp4_html , context=menu_vars, ) )
+    return HTMLResponse ( template._render(source = webm_html , context=menu_vars, ) )
 
 
 
