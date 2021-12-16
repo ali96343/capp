@@ -8,9 +8,10 @@ in my /etc/redis.conf:  databases 64
 
 in5 is similar to in3, in4
 
-uses sio-port 5001, redis-backend disabled for celery, small changes
+uses sio-port 5001, redis-backend disabled for celery, celery task with json-request added 
 
 ----------------------------------------
+
 in3, in4 - UI updaters with multiple celery-beats-workers + pydal + sse-starlette + uvicorn + socketio + live_chart + jpeg_stream + video_stream
 
 0 put in3, in4 to py4web/apps
