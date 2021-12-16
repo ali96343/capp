@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" style="font-size: 1.2em;">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Jokes</title>
+  <!-- Bulma styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
+
+  <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2PYF773PwAGewLSGezkXwAAAABJRU5ErkJggg=="/>
+  <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+
+</head>
+<body>
+
+  [[ include "page_menu.html"  ]]
+  <div id='id_status'>run sio, pls</div>
+  <section class="section">
+    <div class="container">
+      <div class="columns">
+        <div class="column is-6 is-offset-3">
+          <div id="jokes"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+
+   ! function (data_url) {
+
+            const addJoke = (joke) => {
+              document.querySelector('#jokes').innerHTML = `
+                <article class="message is-success">
+                  <div class="message-header">
+                    <p>A very dumb joke every 10 sec</p>
+                  </div>
+                  <div class="message-body">${joke}</div>
+                </article>
+              `  // + document.querySelector('#jokes').innerHTML
+            }
+        
+            addJoke( "from " + "http://api.icndb.com/jokes/random" ); 
+
+            const socket = io.connect( data_url );
+
+            socket.on('connect', ()=> {
+                socket.emit('sync_hello_connect', {data: 'hello from joke!'});
+                document.getElementById("id_status").innerHTML = 'connect, sio_channel=  ' + data_url
+                //console.log('joke connected')
+            });
+
+           socket.on('disconnect', ()=> {
+                document.getElementById("id_status").innerHTML = 'disconnect!'
+                // console.error('Jokes closed')
+                // console.log('joke disconnected')
+            });
+
+            socket.on('reconnect', ()=>{
+                document.getElementById("id_status").innerHTML = 'reconnect!'
+                //console.log('chart reconnected')
+            });
+
+            socket.on('update_joke', (msg)=> {
+               // console.log('!!!!!!!!!!!!! ' + msg);
+                const joke = JSON.parse( msg );
+                addJoke(joke.joke);
+            });
+     } ( "[[ = t_vars['sio_serv_url'] ]]"   )
+
+  </script>
+</body>
+</html>
+

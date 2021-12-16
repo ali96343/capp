@@ -2,6 +2,14 @@
 
 redis-server must be installed and running
 
+in my /etc/redis.conf:  databases 64
+
+----------------------------------------
+
+in5 is similar to in3, in4
+
+uses sio-port 5001, redis-backend disabled for celery, small changes
+
 ----------------------------------------
 in3, in4 - UI updaters with multiple celery-beats-workers + pydal + sse-starlette + uvicorn + socketio + live_chart + jpeg_stream + video_stream
 

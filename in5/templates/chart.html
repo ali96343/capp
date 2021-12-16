@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html style="font-size: 18px;">
+     <head>
+         <title>Real time streaming</title>
+
+         <script src="https://d3js.org/d3-array.v2.min.js"></script>
+         <script src="https://d3js.org/d3-color.v2.min.js"></script>
+         <script src="https://d3js.org/d3-format.v2.min.js"></script>
+         <script src="https://d3js.org/d3-interpolate.v2.min.js"></script>
+         <script src="https://d3js.org/d3-time.v2.min.js"></script>
+         <script src="https://d3js.org/d3-time-format.v3.min.js"></script>
+         <script src="https://d3js.org/d3-scale.v3.min.js"></script>
+         <script src="https://d3js.org/d3-selection.v2.min.js"></script>
+         <script src="https://d3js.org/d3-axis.v2.min.js"></script>
+         <script src="https://huww98.github.io/TimeChart/dist/timechart.min.js"></script>
+
+         <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2PYF773PwAGewLSGezkXwAAAABJRU5ErkJggg=="/>
+         <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+
+     </head>
+
+
+     <body>
+<div>
+<a href="[[= t_vars['index'] ]]">Home</a>&nbsp;
+<a href="[[= t_vars['page2'] ]]">Page 2</a>&nbsp;
+app_name= [[=t_vars["sio_app"] ]]
+</div>
+
+         <div id='id_status'>run sio, pls</div>
+         <div id="chart" style="width: 70%; height: 260px;"></div>
+<!-- https://github.com/huww98/TimeChart  -->
+      <script>
+
+
+   ! function (data_url) {
+           let startTime = Date.now();
+           const el = document.getElementById('chart');
+           const data = [];
+           const chart = new TimeChart(el, {
+                      series: [{ data:data, color: 'green' }],
+                      realTime: true,
+                      xRange: { min: 0, max: 60 },
+                      baseTime: startTime
+            });
+
+            const socket = io.connect( data_url );
+
+            socket.on('connect', ()=> {
+                socket.emit('sync_hello_connect', {data: 'hello from chart!'});
+                document.getElementById("id_status").innerHTML = 'connect, sio_channel=  ' + data_url 
+                //console.log('chart connected')
+            });
+
+            socket.on('disconnect', ()=> {
+                document.getElementById("id_status").innerHTML = 'disconnect!' 
+                //console.log('chart disconnected')
+            });
+
+            socket.on('reconnect', ()=>{
+                document.getElementById("id_status").innerHTML = 'reconnect!' 
+                //console.log('chart reconnected')
+            });
+
+
+            let x = 0;
+            socket.on('update_chart', (msg)=> {
+               // console.log('!!!!!!!!!!!!! ' + msg);
+                const chart_data = JSON.parse( msg );
+                data.push({x, y: chart_data.value});
+                chart.update();
+                x += 1;
+            });
+     } ( "[[ = t_vars['sio_serv_url'] ]]"   )
+      </script>
+
+     </body>
+ </html>
+

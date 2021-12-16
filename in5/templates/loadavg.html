@@ -1,0 +1,75 @@
+<div id="id_load" class="load">
+  <table>
+    <tr><th></th><th>1 min</th><th>5 min</th><th>15 min</th></tr>
+    <tr><th>Load averages:</th><td id="id_1min" >[[= t_vars['load1'] ]]</td>
+    <td id="id_5min">[[=  t_vars['load5']  ]]</td>
+    <td id="id_15min">[[=  t_vars['load15']  ]]</td></tr>
+  </table>
+    <p id="id_msg" align="center" > [[= date_str ]] </p>
+    <p align="center">uptime - 3 sec, select - 5 sec, sse - 2 sec</p>
+    <p id="id_ctrl_msg" align="center" >not connected! run chan_sio ?!</p>
+</div>
+
+<script>
+
+    ! function(sio_url) {
+
+            const socket = io.connect( sio_url );
+
+            socket.on('connect', ()=> {
+                socket.emit('sync_hello_connect', {data: 'from browser: connected!'});
+                document.getElementById("id_ctrl_msg").innerHTML = "connected!";
+                // console.log('sync connected')
+            });
+
+
+            socket.on('disconnect', ()=> {
+                document.getElementById("id_ctrl_msg").innerHTML = "disconnected!";
+            });
+
+            socket.on('reconnect', ()=>{
+                document.getElementById("id_ctrl_msg").innerHTML = "reconnect!";
+            });
+
+
+            socket.on('update_uptime', (msg)=> {
+                // console.log('!!!!!!!!!!!!! ' + msg);
+                const obj = JSON.parse( msg );
+                document.getElementById("id_1min").innerHTML = obj.load1;
+                document.getElementById("id_5min").innerHTML = obj.load5;
+                document.getElementById("id_15min").innerHTML = obj.load15;
+            });
+
+            socket.on('update_date', (msg)=> {
+                // console.log('update_date  ' + msg);
+                document.getElementById("id_msg").innerHTML = msg;
+            });
+
+            socket.on('pgs_reload', (msg)=> {
+                socket.emit('a_pgs_reload', {data: 'from browser: pgs_reload!'});
+                window.location.reload(true);
+                document.getElementById("id_ctrl_msg").innerHTML = msg;
+            });
+
+            socket.on('pydal_msg', (msg)=> {
+                //console.log('pydal_msg ' + msg);
+                socket.emit('a_pydal_msg', {data: 'from browser: pyda_msg!'});
+                document.getElementById("id_ctrl_msg").innerHTML = msg;
+            });
+
+            socket.on('lorem_msg', (msg)=> {
+
+                const id_p1 = document.getElementById("id_1index")
+                const id_p2 = document.getElementById("id_2index")
+
+                if( id_p1 ) { id_p1.innerHTML = msg; };
+
+                if( id_p2 ) { id_p2.innerHTML = msg; };
+
+            });
+
+
+    }(SIO_URL)
+
+</script>
+
