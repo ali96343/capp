@@ -10,7 +10,17 @@ sio_HOST = "127.0.0.1"
 
 sio_serv_url =  f"http://{sio_HOST}:{sio_PORT}" 
 
-P4W_APP = os.path.abspath(__file__).split(os.sep)[-2]
+#P4W_APP = os.path.abspath(__file__).split(os.sep)[-2]
+
+this_dir = os.path.dirname( os.path.abspath(__file__) )
+
+P4W_APP = this_dir.split(os.sep)[-1]
+APPS_DIR = this_dir.split(os.sep)[-2]
+
+
+
+
+print ( P4W_APP )
 
 sio_room = f'{P4W_APP}_room'
 sio_channel = f"sio_{P4W_APP}"
