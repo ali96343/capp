@@ -39,15 +39,19 @@ app.control.purge()
 
 
 @app.task(ignore_result=True)
-def update_loadavg():
+def update_uptime():
     load1, load5, load15 = C.inject_load()
     l_data = json.dumps(dict(load1=load1, load5=load5, load15=load15))
-    r_mgr.emit("update_uptime", l_data, broadcast=True, include_self=False)
+    ev_name = sys._getframe().f_code.co_name
+    r_mgr.emit(ev_name, l_data, broadcast=True, include_self=False)
+
+
+
 
 
 app.conf.beat_schedule = {
-    "emit-uptime-task": {
-        "task": f"{C.APPS_DIR}.{C.P4W_APP}.{MOD_NM}.update_loadavg",
+    "update_uptime-task": {
+        "task": f"{C.APPS_DIR}.{C.P4W_APP}.{MOD_NM}.update_uptime",
         "schedule": 3.0,
         "args": (),
         "options": {"queue": f"{C.cel_queue_pre}{QUE_NUM}"},

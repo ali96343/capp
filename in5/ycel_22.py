@@ -40,21 +40,19 @@ app.control.purge()
 
 
 @app.task(ignore_result=True)
-def emit_date():
+def update_chart():
     data_str = datetime.datetime.now().strftime("%d.%m.%y %H:%M:%S")
     r_mgr.emit("update_date", data_str, broadcast=True, include_self=False)
     import random
     chart_data = json.dumps( dict( value=random.randint( 10, 90) )   )
-    r_mgr.emit("update_chart", chart_data, broadcast=True, include_self=False)
-
-    C.sync_event_post(
-        "update_date", data=data_str,
-    )
+    ev_name = sys._getframe().f_code.co_name
+    r_mgr.emit(ev_name, chart_data, broadcast=True, include_self=False)
+    C.sync_event_post( "update_date", data=data_str,)
 
 
 app.conf.beat_schedule = {
-    "emit-date-task": {
-        "task": f"{C.APPS_DIR}.{C.P4W_APP}.{MOD_NM}.emit_date",
+    "update_chart-task": {
+        "task": f"{C.APPS_DIR}.{C.P4W_APP}.{MOD_NM}.update_chart",
         "schedule": 1.0,
         "args": (),
         "options": {"queue": f"{C.cel_queue_pre}{QUE_NUM}"},

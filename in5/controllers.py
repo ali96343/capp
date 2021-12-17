@@ -70,8 +70,9 @@ def sio_pusher():
 
 @action("pgs_reload", method=["GET", "POST"])
 def pgs_reload():
-    data_str = "! pgs_reload " + datetime.datetime.now().strftime("%H:%M:%S")
-    r_mgr.emit("pgs_reload", data_str, broadcast=True, include_self=False)
+    ev_name = sys._getframe().f_code.co_name
+    data_str = f"! {ev_name} " + datetime.datetime.now().strftime("%H:%M:%S")
+    r_mgr.emit(ev_name, data_str, broadcast=True, include_self=False)
     return None
 
 

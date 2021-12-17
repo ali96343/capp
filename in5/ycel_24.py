@@ -88,7 +88,7 @@ app.control.purge()
 
 
 @app.task(ignore_result=True)
-def get_random_joke(soft_time_limit=3, time_limit=5  ):
+def update_joke(soft_time_limit=3, time_limit=5  ):
 
     # @celery.task( retry_backoff=5, max_retries=7, retry_jitter=False,)
     # https://breadcrumbscollector.tech/what-is-celery-beat-and-how-to-use-it-part-2-patterns-and-caveats/
@@ -98,6 +98,7 @@ def get_random_joke(soft_time_limit=3, time_limit=5  ):
     joke_url = "http://api.icndb.com/jokes/random"
     msg, joke, ex_info  = None, None, None
 
+    ev_name = sys._getframe().f_code.co_name
     try:
         requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ':RC4-SHA'
         res = requests.get(joke_url,timeout=3 )
@@ -106,7 +107,7 @@ def get_random_joke(soft_time_limit=3, time_limit=5  ):
             res_json = res.json()
             joke = res_json["value"]["joke"]
         else:
-            joke = f"!!! error in get_random_joke, url={joke_url}"
+            joke = f"!!! error in {ev_name}, url={joke_url}"
 
 
     except SoftTimeLimitExceeded:
@@ -114,15 +115,15 @@ def get_random_joke(soft_time_limit=3, time_limit=5  ):
 
     except Exception as ex:
         ex_info = str(sys.exc_info()[0]).split(" ")[1].strip(">").strip("'")
-        joke = f"!!! error in get_random_joke, url={joke_url}" + ex_info
+        joke = f"!!! error in {ev_name}, url={joke_url}" + ex_info
 
     msg = json.dumps(dict(joke=joke,))
-    r_mgr.emit("update_joke", msg, broadcast=True, include_self=False)
+    r_mgr.emit(ev_name, msg, broadcast=True, include_self=False)
 
 
 app.conf.beat_schedule = {
-    "emit-joke": {
-        "task": f"{C.APPS_DIR}.{C.P4W_APP}.{MOD_NM}.get_random_joke",
+    "update_joke-task": {
+        "task": f"{C.APPS_DIR}.{C.P4W_APP}.{MOD_NM}.update_joke",
         "schedule": 10.0,
         "args": (),
         "options": {"queue": f"{C.cel_queue_pre}{QUE_NUM}"},

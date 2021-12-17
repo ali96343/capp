@@ -9,7 +9,6 @@ this_dir = os.path.dirname( os.path.abspath(__file__) )
 if not this_dir in sys.path:
     sys.path.insert(0, this_dir)
 
-#from . import chan_conf as C
 import chan_conf as C
 
 QUE_NUM, MOD_NM = C.get_name_num(__file__)
@@ -37,9 +36,11 @@ app.control.purge()
 
 
 @app.task(ignore_result=True)
-def read_db():
+def lorem_msg():
     from random import randrange
 
+
+    ev_name = sys._getframe().f_code.co_name
     some_id = str(randrange(1, 10))
     tbl = "test_table"
     try:
@@ -52,17 +53,17 @@ def read_db():
             if not k in ("update_record", "delete_record")
         ]
         msg = "{}.select:  {}".format(tbl, " ".join(res))
-        r_mgr.emit("lorem_msg", msg, broadcast=True, include_self=False)
+        r_mgr.emit(ev_name, msg, broadcast=True, include_self=False)
     except Exception as ex:
         # print(sys.exc_info())
         ex_info = str(sys.exc_info()[0]).split(" ")[1].strip(">").strip("'")
-        msg = f"!!! error in read_db, id={some_id}, table={tbl}" + ex_info
-        r_mgr.emit("lorem_msg", msg, broadcast=True, include_self=False)
+        msg = f"!!! error in {ev_name}, id={some_id}, table={tbl}" + ex_info
+        r_mgr.emit(ev_name, msg, broadcast=True, include_self=False)
 
 
 app.conf.beat_schedule = {
-    "read-db-task": {
-        "task": f"{C.APPS_DIR}.{C.P4W_APP}.{MOD_NM}.read_db",
+    "lorem_msg-task": {
+        "task": f"{C.APPS_DIR}.{C.P4W_APP}.{MOD_NM}.lorem_msg",
         "schedule": 5.0,
         "args": (),
         "options": {"queue": f"{C.cel_queue_pre}{QUE_NUM}"},
