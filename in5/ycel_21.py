@@ -37,7 +37,7 @@ app.conf.task_send_sent_event=True
 
 app.control.purge()
 
-
+TIME_schedule= 3.0
 @app.task(ignore_result=True)
 def update_uptime():
     load1, load5, load15 = C.inject_load()
@@ -52,7 +52,7 @@ def update_uptime():
 app.conf.beat_schedule = {
     "update_uptime-task": {
         "task": f"{C.APPS_DIR}.{C.P4W_APP}.{MOD_NM}.update_uptime",
-        "schedule": 3.0,
+        "schedule": TIME_schedule,
         "args": (),
         "options": {"queue": f"{C.cel_queue_pre}{QUE_NUM}"},
     },

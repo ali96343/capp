@@ -38,7 +38,7 @@ app = Celery(
 )
 app.control.purge()
 
-
+TIME_schedule= 1.0
 @app.task(ignore_result=True)
 def update_chart():
     data_str = datetime.datetime.now().strftime("%d.%m.%y %H:%M:%S")
@@ -53,7 +53,7 @@ def update_chart():
 app.conf.beat_schedule = {
     "update_chart-task": {
         "task": f"{C.APPS_DIR}.{C.P4W_APP}.{MOD_NM}.update_chart",
-        "schedule": 1.0,
+        "schedule": TIME_schedule,
         "args": (),
         "options": {"queue": f"{C.cel_queue_pre}{QUE_NUM}"},
     },

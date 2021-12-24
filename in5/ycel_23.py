@@ -34,7 +34,7 @@ app = Celery(
 )
 app.control.purge()
 
-
+TIME_schedule= 5.0
 @app.task(ignore_result=True)
 def lorem_msg():
     from random import randrange
@@ -64,7 +64,7 @@ def lorem_msg():
 app.conf.beat_schedule = {
     "lorem_msg-task": {
         "task": f"{C.APPS_DIR}.{C.P4W_APP}.{MOD_NM}.lorem_msg",
-        "schedule": 5.0,
+        "schedule": TIME_schedule,
         "args": (),
         "options": {"queue": f"{C.cel_queue_pre}{QUE_NUM}"},
     },

@@ -18,6 +18,7 @@ RED_CHAN = str(QUE_NUM)
 # RED_CHAN = str(QUE_NUM + QUE_NUM )
 # RED_CHAN2 = str(QUE_NUM + QUE_NUM + 1 )
 
+
 # -----------------------------------------------------------------
 # https://docs.celeryproject.org/en/latest/tutorials/task-cookbook.html#id1
 
@@ -87,8 +88,13 @@ app = Celery(
 app.control.purge()
 
 
-@app.task(ignore_result=True)
-def update_joke(soft_time_limit=3, time_limit=5  ):
+# super !!!
+# https://testdriven.io/blog/retrying-failed-celery-tasks/
+
+
+TIME_schedule= 10.0
+@app.task(ignore_result=True, soft_time_limit=3, time_limit=5  )
+def update_joke():
 
     # @celery.task( retry_backoff=5, max_retries=7, retry_jitter=False,)
     # https://breadcrumbscollector.tech/what-is-celery-beat-and-how-to-use-it-part-2-patterns-and-caveats/
@@ -124,7 +130,7 @@ def update_joke(soft_time_limit=3, time_limit=5  ):
 app.conf.beat_schedule = {
     "update_joke-task": {
         "task": f"{C.APPS_DIR}.{C.P4W_APP}.{MOD_NM}.update_joke",
-        "schedule": 10.0,
+        "schedule": TIME_schedule,
         "args": (),
         "options": {"queue": f"{C.cel_queue_pre}{QUE_NUM}"},
     },
