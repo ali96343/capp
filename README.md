@@ -6,6 +6,14 @@ in my /etc/redis.conf:  databases 64
 
 ----------------------------------------
 
+here ( https://github.com/ali96343/lvsio ) 
+
+long-running-celery task with sse and sio.
+
+source:  https://matthewminer.com/2015/02/21/pattern-for-async-task-queue-results
+
+---------------------------------------
+
 in5 is similar to in3, in4
 
 uses sio-port 5001, redis-backend disabled for celery, celery task with json-request added 
